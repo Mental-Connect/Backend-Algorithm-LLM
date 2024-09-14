@@ -54,5 +54,4 @@ figshare_data/
 *.pkl
 
 # Ignore all the environments
-/audio_text_llm/SenseVoiceSmall/sensevoice_env/
-
+Algorithm/audio_text_llm/Models/SenseVoiceSmall/sensevoice_env/
