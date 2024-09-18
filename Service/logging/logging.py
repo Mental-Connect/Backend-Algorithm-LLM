@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 
 # Directory for log files
-LOG_DIR = "./log_data/logging"
+LOG_DIR = "logging/log_data"
 os.makedirs(LOG_DIR, exist_ok=True)
 
 # Create a custom logger
