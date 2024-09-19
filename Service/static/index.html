@@ -161,7 +161,7 @@
     </div>
 
     <script>
-        const ws = new WebSocket('ws://localhost:8000/ws');
+        const ws = new WebSocket('ws://localhost:8000/audio-transcribe');
         let mediaRecorder;
         let audioChunks = [];
         let recordingInterval;
@@ -319,7 +319,7 @@
                 chatDiv.scrollTop = chatDiv.scrollHeight; // Scroll to the bottom
 
                 // Send the chat message to the server
-                const response = await fetch('/chat', {
+                const response = await fetch('/chatbot', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -347,7 +347,7 @@
             };
 
             // Send the save data to the backend
-            const response = await fetch('/end_session', {
+            const response = await fetch('/save_session', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

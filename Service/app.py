@@ -40,7 +40,7 @@ async def student_info(info: SubjectInformation):
     }
     return info
 
-@app.websocket("/ws")
+@app.websocket("/audio-transcribe")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     session_manager.active_websockets.add(websocket)
@@ -60,7 +60,7 @@ async def websocket_endpoint(websocket: WebSocket):
 async def startup_event():
     asyncio.create_task(process_audio_queue())
 
-@app.post("/chat", response_model=Response)
+@app.post("/chatbot", response_model=Response)
 async def chat_model(request: Request):
     full_transcription = session_manager.transcription_storage[TRANSCRIPTION_KEY]
     student_id = session_manager.student_id_info
@@ -83,7 +83,7 @@ async def chat_model(request: Request):
     logging.info(f"Database after chat: {session_manager.database_data_saved}")
     return Response(response=response_text.response)
 
-@app.post("/end_session")
+@app.post("/save_session")
 async def end_session():
     if session_manager.database_data_saved:
         documents = [data for data in session_manager.database_data_saved.values()]
