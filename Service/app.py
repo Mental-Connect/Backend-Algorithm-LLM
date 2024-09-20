@@ -21,11 +21,11 @@ from Service.logging.logging import *
 
 # FastAPI app
 app = FastAPI()
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+app.mount("/demo", StaticFiles(directory="demo"), name="demo")
 
 @app.get("/")
 async def get():
-    with open("static/index.html", encoding="utf-8") as file:
+    with open("demo/demo.html", encoding="utf-8") as file:
         content = file.read()
     return HTMLResponse(content)
 

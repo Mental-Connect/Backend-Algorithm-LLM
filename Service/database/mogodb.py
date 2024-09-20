@@ -1,6 +1,7 @@
 from pymongo import MongoClient
+from Service.config import *
 
 # Setup MongoDB connection
-client = MongoClient("mongodb://localhost:27017/")
-db = client["Psycho_session"]
-collection = db["Information"]
+client = MongoClient(client_uri)
+db = client[database_name]
+collection = db[collection]

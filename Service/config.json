@@ -12,5 +12,11 @@
         "model_sampling_rate": 16000,
         "kwargs": {"disable_update": true, "device": "cpu"}
 
+    },
+
+    "database_information" : {
+        "client_uri": "mongodb://localhost:27017/",
+        "database_name": "Psycho_session",
+        "collection": "Information"
     }
 }
