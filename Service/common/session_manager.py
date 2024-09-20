@@ -5,7 +5,6 @@ from typing import Set
 from fastapi import FastAPI, WebSocket
 
 # Constants
-STATIC_DIR = "static"
 TRANSCRIPTION_KEY = "transcription"
 class SessionManager:
     def __init__(self):
