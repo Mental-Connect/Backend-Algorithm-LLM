@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Audio Recorder and Chat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #000000;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #appContainer {
+            background: #720505;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            max-width: 90%;
+        }
+
+        h1, h2, h3 {
+            color: #f3f3f3;
+            text-align: center;
+        }
+
+        button {
+            background-color: #05192e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin: 5px 0;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        button:disabled {
+            background-color: #cac8c8;
+            cursor: not-allowed;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: #0056b3;
+        }
+
+        #messages, #chatMessages {
+            border: 1px solid #080000;
+            padding: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+            white-space: pre-wrap; /* Preserve white spaces and line breaks */
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        #notification {
+            margin-top: 10px;
+            color: #000000;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        #messages {
+            background-color: #ffffff; /* Bright yellow background */
+            color: #000000; /* Black text */
+        }
+
+        #chatBox {
+            margin-top: 20px;
+        }
+
+        #subjectForm {
+            margin-top: 20px;
+        }
+
+        input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 8px;
+            margin-top: 10px;
+            border: 1px solid #220808;
+            border-radius: 5px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .dropdown-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        select {
+            width: calc(100% - 100px);
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="appContainer">
+        <h1>Enter Subject Information</h1>
+        <form id="subjectForm">
+            <input type="text" id="studentId" name="studentId" placeholder="Student Id" required><br><br>
+            <input type="text" id="studentName" name="studentName" placeholder="Student Name" required><br><br>
+            <input type="number" id="studentAge" name="studentAge" placeholder="Student Age" required><br><br>
+        
+            <select id="studentGender" name="studentGender" required>
+                <option value="">Select Gender</option>
+                <option value="MALE">Male</option>
+                <option value="FEMALE">Female</option>
+                <option value="OTHER">Other</option>
+            </select><br><br>
+            <button type="submit">Submit</button>
+            <div id="notification"></div> <!-- Notification area -->
+        </form>
+        <div id="subjectResponse"></div>        
+        <h1>Audio Recorder</h1>
+        <div class="button-container">
+            <button id="startBtn">Start Recording</button>
+            <button id="stopBtn" disabled>Stop Recording</button>
+            <button id="endBtn" disabled>End Recording</button>
+        </div>
+        <div id="messages"></div>
+        <div id="notification"></div> <!-- Notification area -->
+
+        <div id="chatBox">
+            <h1>Chat with Model</h1>
+            <div class="dropdown-container">
+                <select id="questionDropdown">
+                    <option value="">Select a question...</option>
+                    <option value="来访者的主观描述（本周来访者主诉变化情况、与咨询师约定的任务完成情况、自身工作/学业/生活情况及其它来访者主动报告的情况等）">来访者的主观描述</option>
+                    <option value="对来访者的客观描述（咨询师的观察、测试结果、医院就诊结果等）">对来访者的客观描述</option>
+                    <option value="咨询目标">咨询目标</option>
+                    <option value="咨询要点及处理（咨询师在咨询过程中采取的行动，主要咨询方法及技术、作业等）">咨询要点及处理</option>
+                    <option value="当前会谈的效果（来访者对咨询的反应等）">当前会谈的效果</option>
+                </select>
+                <input type="text" id="chatInput" placeholder="Type your message here" />
+            </div>
+            <button id="sendBtn" disabled>Send</button>
+            <div id="chatMessages"></div> <!-- Chat messages area -->
+        </div>
+        <div id="SaveInformation">
+            <h3> Save The Information </h3>
+            <button id="saveBtn" disabled>Save</button>
+        </div>
+    </div>
+
+    <script>
+        const ws = new WebSocket('ws://localhost:8000/audio-transcribe');
+        let mediaRecorder;
+        let audioChunks = [];
+        let recordingInterval;
+        let isRecording = false;
+        let recordingEnded = false;
+
+        // WebSocket event handlers for audio recording
+        ws.onopen = () => {
+            console.log('WebSocket connection opened');
+        };
+
+        ws.onmessage = function(event) {
+            console.log('Received message:', event.data); // Debugging: Log the received message
+            const messageDiv = document.getElementById('messages');
+            // Append new message to the existing text without creating a new line
+            messageDiv.innerHTML += `${event.data} <br>`;
+            messageDiv.scrollTop = messageDiv.scrollHeight; // Scroll to the bottom
+        };
+
+        ws.onerror = function(error) {
+            console.log('WebSocket Error: ', error);
+        };
+
+        ws.onclose = function() {
+            console.log('WebSocket connection closed');
+            document.getElementById('notification').innerText = 'WebSocket connection closed.';
+        };
+
+
+        // Form submission for subject information
+        // Form submission for subject information
+        document.getElementById('subjectForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const studentId = document.getElementById('studentId').value;
+            const studentName = document.getElementById('studentName').value;
+            const studentAge = document.getElementById('studentAge').value;
+            const studentGender = document.getElementById('studentGender').value;
+
+            const subjectData = {
+                subject_id: studentId,
+                subject_name: studentName,
+                subject_age: studentAge,
+                subject_gender: studentGender,
+            };
+
+            // Send data to the server
+            fetch('/subject-information', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(subjectData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('subjectResponse').innerHTML = `Submitted: ${studentId}, ${studentName}, ${studentAge}, ${studentGender}`;
+                document.getElementById('notification').innerText = 'Information Saved'; // Notify successful save
+                document.getElementById('saveBtn').disabled = false; // Enable save button
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('notification').innerText = 'Error Saving Information'; // Notify error
+            });
+        });
+
+        // Start recording
+        document.getElementById('startBtn').addEventListener('click', async () => {
+            if (recordingEnded) return; // Prevent starting if recording has ended
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.start();
+
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                };
+
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+                    audioChunks = []; // Reset for next recording
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        ws.send(reader.result); // Send audio data to WebSocket
+                    };
+                    reader.readAsArrayBuffer(audioBlob);
+                };
+
+                isRecording = true;
+                recordingInterval = setInterval(() => {
+                    if (isRecording) {
+                        mediaRecorder.stop();
+                        mediaRecorder.start();
+                    }
+                }, 30000); // Stop and start every 2 seconds
+
+                document.getElementById('startBtn').disabled = true;
+                document.getElementById('stopBtn').disabled = false;
+                document.getElementById('endBtn').disabled = false;
+                document.getElementById('notification').innerText = 'Recording started'; // Notify recording started
+                document.getElementById('sendBtn').disabled = true; // Disable chat button
+            } catch (error) {
+                console.error('Error accessing audio devices:', error);
+            }
+        });
+
+        // Stop recording
+        document.getElementById('stopBtn').addEventListener('click', () => {
+            if (mediaRecorder) {
+                clearInterval(recordingInterval); // Stop the interval
+                mediaRecorder.stop(); // Ensure the current recording is stopped
+                isRecording = false;
+                document.getElementById('notification').innerText = 'Recording stopped. To continue, press Start again.';
+                document.getElementById('sendBtn').disabled = true; // Disable chat button
+            }
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+        });
+
+        // End recording
+        document.getElementById('endBtn').addEventListener('click', () => {
+            if (mediaRecorder) {
+                clearInterval(recordingInterval); // Stop the interval
+                mediaRecorder.stop(); // Ensure the current recording is stopped
+                isRecording = false;
+                recordingEnded = true; // Mark recording as ended
+                document.getElementById('startBtn').disabled = true;
+                document.getElementById('stopBtn').disabled = true;
+                document.getElementById('endBtn').disabled = true;
+                document.getElementById('notification').innerText = 'Recording ended. You can now chat.';
+                ws.close(); // Close WebSocket connection here
+                document.getElementById('sendBtn').disabled = false; // Enable chat button
+            }
+        });
+
+        // Handle dropdown change
+        document.getElementById('questionDropdown').addEventListener('change', (event) => {
+            const selectedQuestion = event.target.value;
+            if (selectedQuestion) {
+                document.getElementById('chatInput').value = selectedQuestion;
+            }
+        });
+
+        // Chat functionality
+        document.getElementById('sendBtn').addEventListener('click', async () => {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (message) {
+                input.value = ''; // Clear input field
+                // Display the user's message
+                const chatDiv = document.getElementById('chatMessages');
+                chatDiv.innerHTML += `<div><strong>You:</strong> ${message}</div>`;
+                chatDiv.scrollTop = chatDiv.scrollHeight; // Scroll to the bottom
+
+                // Send the chat message to the server
+                const response = await fetch('/chatbot', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ prompt: message })
+                });
+                const data = await response.json();
+                // Display the model's response
+                chatDiv.innerHTML += `<div><strong>Model:</strong> ${data.response}</div>`;
+                chatDiv.scrollTop = chatDiv.scrollHeight; // Scroll to the bottom
+            }
+        });
+
+        document.getElementById('saveBtn').addEventListener('click', async () => {
+            const studentId = document.getElementById('studentId').value;
+            const studentName = document.getElementById('studentName').value;
+            const studentAge = document.getElementById('studentAge').value;
+            const studentGender = document.getElementById('studentGender').value;
+            
+            const saveData = {
+                studentId: studentId,
+                studentName: studentName,
+                studentAge: studentAge,
+                studentGender: studentGender
+            };
+
+            // Send the save data to the backend
+            const response = await fetch('/save_session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(saveData)
+            });
+
+            const result = await response.json();
+            document.getElementById('notification').innerText = result.status; // Display the status message
+        });
+
+
+
+        
+    </script>
+</body>
+</html>
