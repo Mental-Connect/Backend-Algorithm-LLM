@@ -48,12 +48,8 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             data = await websocket.receive_bytes()
             await session_manager.audio_queue.put(data)
-            await websocket.send_text("ping")
-            await asyncio.sleep(5)  # 设置适当的间隔时间
-
     except WebSocketDisconnect:
         handle_disconnection(websocket)
-
     except Exception as e:
         logging.error(f"WebSocket error: {e}")
         await websocket.close()
