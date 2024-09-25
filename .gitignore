@@ -33,6 +33,8 @@ temp/
 .env
 env/
 venv/
+.venv/
+myenv/
 .vs/
 
 # Ignore dependency folders
