@@ -92,6 +92,3 @@ async def end_session():
         return {"status": "Session data saved and cleared"}
     else:
         return {"status": "No session data to save"}
-
-
-
