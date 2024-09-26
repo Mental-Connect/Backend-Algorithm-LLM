@@ -2,6 +2,7 @@ import os
 import sys
 import asyncio
 import logging
+import uvicorn
 from typing import Set
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
@@ -16,7 +17,7 @@ from Service.common.response import Response
 from Service.common.session_manager import *
 from Service.common.subject_information import SubjectInformation
 from Service.common.router_functions import *
-from Service.database.mogodb import collection
+# from Service.database.mogodb import collection
 from Service.logging.logging import * 
 
 # FastAPI app
@@ -87,8 +88,11 @@ async def chat_model(request: Request):
 async def end_session():
     if session_manager.database_data_saved:
         documents = [data for data in session_manager.database_data_saved.values()]
-        collection.insert_many(documents)
+        # collection.insert_many(documents)
         session_manager.database_data_saved.clear()
         return {"status": "Session data saved and cleared"}
     else:
         return {"status": "No session data to save"}
+
+if __name__ == '__main__':
+    uvicorn.run(app, host = "127.0.0.1", port = 8000)

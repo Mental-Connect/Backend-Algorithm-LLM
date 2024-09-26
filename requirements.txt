@@ -1,9 +1,11 @@
-torch>=1.13
+torch==1.13
 torchaudio==2.4.1
 modelscope==1.18.0
 huggingface==0.23.0
-funasr>=1.1.2
-numpy<=1.26.4
+funasr==1.1.2
+numpy==1.26.4
 langchain== 0.1.20
 librosa==0.10.2.post1
 fastapi==0.114.1
+pymongo==4.7.2
+uvicorn==0.29.0
