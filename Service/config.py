@@ -1,6 +1,11 @@
+import os
 import json
 
-with open("./config.json", encoding = "utf-8") as f:
+# 获取当前文件的目录
+current_dir = os.path.dirname(os.path.abspath(__file__))
+config_path = os.path.join(current_dir, 'config.json')
+
+with open(config_path, encoding = "utf-8") as f:
     confrigations = json.load(f)
 
 

@@ -1,8 +1,9 @@
-from Algorithm.common.response import Response
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_community.chat_models import ChatZhipuAI
+
 from Service.config import *
-from Algorithm.question_answering_llm.service.api_key import *
+from Service.api_key import *
+from Service.common.http.response import Response
 
 def chatbot(context, query) -> Response:
     # Initialize the ChatZhipuAI model

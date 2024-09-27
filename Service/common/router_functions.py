@@ -5,7 +5,8 @@ import logging
 
 from fastapi import WebSocket
 
-from Algorithm.audio_text_llm.service.audio_to_text import audio_to_text_model
+# from Algorithm.audio_text_llm.service.audio_to_text import audio_to_text_model
+from Service.model.audio_to_text import audio_to_text_model
 from Service.common.session_manager import *
 
 def handle_disconnection(websocket: WebSocket):
