@@ -12,9 +12,10 @@ router = APIRouter()
 
 @router.post("/chatbot", response_model=Response)
 async def chat_model(request: Request):
-    full_transcription = session_manager.transcription_storage[TRANSCRIPTION_KEY]
+    full_transcription = session_manager.transcription_storage["transcription"]
     student_id = session_manager.student_id_info
     if not full_transcription:
+        logging.warning("response: No transcription available. Please upload an audio file first.")
         return {"response": "No transcription available. Please upload an audio file first."}
 
     response_text = chatbot(query=request.prompt, context=full_transcription)
