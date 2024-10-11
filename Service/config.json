@@ -8,9 +8,15 @@
     },
 
     "audio_to_text_transcriber": {
-        "model":"paraformer-zh",
+        "non_streaming_model":"paraformer-zh",
+        "non_streaming_audio_gathering_time": 30,
+        "streaming_model":"paraformer-zh-streaming",
+        "Audio_transcription_files":"Audio_transcription_files/",
         "model_sampling_rate": 16000,
-        "kwargs": {"disable_update": true, "device": "cpu"}
+        "kwargs": {"disable_update": true, "device": "cpu"},
+        "streaming_configrations": {"audio_data_processed_partition":[0, 10, 5], "encoder_chunk_look_back":4, 
+        "decoder_chunk_look_back": 1, "Samples_in_one_second": 960,
+        "stopwords":["嗯", "啊", "哦","哼"]}
 
     },
 

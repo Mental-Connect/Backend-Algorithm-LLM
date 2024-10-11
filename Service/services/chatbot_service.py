@@ -1,10 +1,10 @@
 from Algorithm.question_answering_llm.service.chat_bot import chatbot
 from Service.common.session_manager import session_manager
-from Service.common.response import *
+from Service.common.http.response import *
 import logging
 
 async def handle_chatbot(request):
-    full_transcription = session_manager.transcription_storage[TRANSCRIPTION_KEY]
+    full_transcription = session_manager.transcription_storage["transcription"]
     student_id = session_manager.student_id_info
     if not full_transcription:
         return {"response": "No transcription available. Please upload an audio file first."}

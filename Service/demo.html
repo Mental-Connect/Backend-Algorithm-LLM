@@ -109,10 +109,36 @@
             border-radius: 5px;
             margin-right: 10px;
         }
+        label {
+            color: white; /* White text */
+            font-weight: bold; /* Bold text */
+            display: block; /* Ensures labels are on separate lines */
+            margin-top: 10px; /* Adds space above each label */
+        }
+        body {
+            display: flex;
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            height: 100vh; /* Full height of the viewport */
+            margin: 0; /* Remove default margin */
+            background-color: #000000; /* Optional background color */
+        }
+        #container {
+            text-align: center; /* Center text inside the container */
+            color: white; /* Optional text color */
+        }
+        #frequencySettings {
+            background: #720505; /* Background color for frequency settings */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body>
     <div id="appContainer">
+        <!-- Frequency Settings -->
+
         <h1>Enter Subject Information</h1>
         <form id="subjectForm">
             <input type="text" id="studentId" name="studentId" placeholder="Student Id" required><br><br>
@@ -128,7 +154,17 @@
             <button type="submit">Submit</button>
             <div id="notification"></div> <!-- Notification area -->
         </form>
-        <div id="subjectResponse"></div>        
+        <div id="subjectResponse"></div>   
+        <div id="frequencySettings">
+            <h1>Set Frequencies</h1>
+            <label for="lowFrequency">Low Frequency (100-1500):</label>
+            <input type="range" id="lowFrequency" min="100" max="1500" value="100" step="50" />
+            <span id="lowFrequencyValue">350</span> Hz
+
+            <label for="highFrequency">High Frequency (2000-4000):</label>
+            <input type="range" id="highFrequency" min="2000" max="4000" value="2000" step="50" />
+            <span id="highFrequencyValue">3500</span> Hz
+        </div>     
         <h1>Audio Recorder</h1>
         <div class="button-container">
             <button id="startBtn">Start Recording</button>
@@ -137,6 +173,12 @@
         </div>
         <div id="messages"></div>
         <div id="notification"></div> <!-- Notification area -->
+
+        <div class="button-container" style="justify-content: center;">
+            <button id="sendTrueBtn" disabled>Create Context</button>
+        </div>
+        <div id="responseMessage"></div>
+
 
         <div id="chatBox">
             <h1>Chat with Model</h1>
@@ -228,10 +270,46 @@
             });
         });
 
+        const lowFrequencySlider = document.getElementById('lowFrequency');
+        const highFrequencySlider = document.getElementById('highFrequency');
+        const lowFrequencyValue = document.getElementById('lowFrequencyValue');
+        const highFrequencyValue = document.getElementById('highFrequencyValue');
+
+        // Update displayed frequency values
+        lowFrequencySlider.addEventListener('input', () => {
+            lowFrequencyValue.textContent = lowFrequencySlider.value;
+        });
+
+        highFrequencySlider.addEventListener('input', () => {
+            highFrequencyValue.textContent = highFrequencySlider.value;
+        });
+
+        // Initialize frequency values
+        lowFrequencyValue.textContent = lowFrequencySlider.value;
+        highFrequencyValue.textContent = highFrequencySlider.value;
+
         // Start recording
         document.getElementById('startBtn').addEventListener('click', async () => {
             if (recordingEnded) return; // Prevent starting if recording has ended
             try {
+                const lowFreq = parseInt(lowFrequencySlider.value);
+                const highFreq = parseInt(highFrequencySlider.value);
+                
+                // You can send these values to the backend if needed
+                const frequencyData = {
+                    low_frequency: lowFreq,
+                    high_frequency: highFreq,
+                };
+
+                // Send frequency values to backend
+                await fetch('/frequency-settings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(frequencyData),
+                });
+
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 mediaRecorder = new MediaRecorder(stream);
                 mediaRecorder.start();
@@ -258,13 +336,14 @@
                         mediaRecorder.stop();
                         mediaRecorder.start();
                     }
-                }, 3000); // Stop and start every 2 seconds
+                }, 1500); // Stop and start every 1.5 seconds
 
                 document.getElementById('startBtn').disabled = true;
                 document.getElementById('stopBtn').disabled = false;
                 document.getElementById('endBtn').disabled = false;
                 document.getElementById('notification').innerText = 'Recording started'; // Notify recording started
                 document.getElementById('sendBtn').disabled = true; // Disable chat button
+                document.getElementById('sendTrueBtn').disabled = true; // Enable the sendTrueBtn
             } catch (error) {
                 console.error('Error accessing audio devices:', error);
             }
@@ -293,9 +372,28 @@
                 document.getElementById('startBtn').disabled = true;
                 document.getElementById('stopBtn').disabled = true;
                 document.getElementById('endBtn').disabled = true;
-                document.getElementById('notification').innerText = 'Recording ended. You can now chat.';
                 ws.close(); // Close WebSocket connection here
+                document.getElementById('sendTrueBtn').disabled = false; // Enable the sendTrueBtn
+                document.getElementById('notification').innerText = 'Recording ended. Waiting for Context to Process.';
+            }
+        });
+
+        document.getElementById('sendTrueBtn').addEventListener('click', async () => {
+            const response = await fetch('/create-context', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ command: true }), // Sending True 
+            });
+
+            if (response.ok) {
+                //const result = await response.json(); // If you want to capture the result
+                //console.log(result); // Do something with the result if needed
+                document.getElementById('notification').innerText = 'Context Ready. Now you can Chat!!';
                 document.getElementById('sendBtn').disabled = false; // Enable chat button
+            } else {
+                document.getElementById('responseMessage').innerText = 'Error sending command.';
             }
         });
 

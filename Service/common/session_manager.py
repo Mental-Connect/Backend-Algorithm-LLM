@@ -9,7 +9,7 @@ TRANSCRIPTION_KEY = "transcription"
 class SessionManager:
     def __init__(self):
         self.transcriptions = []
-        self.transcription_storage = {TRANSCRIPTION_KEY: " "}
+        self.transcription_storage = {"transcription": " "}
         self.audio_queue = asyncio.Queue()
         self.student_id_info = ""
         self.database_data_saved = defaultdict(dict)
