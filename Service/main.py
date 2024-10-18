@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 
-from Service.routers import audio, chatbot, subject, frequency, context
+from Service.routers import audio, chatbot, subject, frequency, context, intensity
 from Service.common.audio_transcription_process import *
 from Service.common.session_manager import *
 from Service.common.audio_models import AudioModels
@@ -23,6 +23,7 @@ app.include_router(chatbot.router)
 app.include_router(subject.router)
 app.include_router(frequency.router)
 app.include_router(context.router)
+app.include_router(intensity.router)
 
 @app.get("/")
 async def get():

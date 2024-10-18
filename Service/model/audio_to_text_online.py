@@ -9,6 +9,7 @@ from Service.config import *
 from Service.common.noise_filter import *
 from Service.common.session_manager import *
 from Service.common.streaming_model_frequency import StreamingModelFrequency
+from Service.common.session_manager import *
 
 
 # Apply the band-pass filter

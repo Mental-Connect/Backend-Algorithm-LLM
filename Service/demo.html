@@ -13,15 +13,19 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            overflow: hidden; /* Prevent scrolling of the entire page */
         }
 
         #appContainer {
             background: #720505;
-            padding: 30px;
-            border-radius: 10px;
+            padding: 50px;
+            border-radius: 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 400px;
-             max-width: 90%;
+            width: 1000px;
+            max-width: 90%;
+            height: 90vh; /* Adjust height to fit the screen */
+            max-height: 90vh; /* Set maximum height relative to the viewport */
+            overflow-y: auto; /* Enable scrolling if content exceeds the container */
         }
 
         h1, h2, h3 {
@@ -67,10 +71,28 @@
             font-weight: bold;
             text-align: center;
         }
-
-        #messages {
-            background-color: #ffffff; /* Bright yellow background */
+   
+        .messages {
+            background-color: #ffffff; /* White background */
             color: #000000; /* Black text */
+            border: 1px solid #ccc; /* Light gray border */
+            padding: 10px; /* Padding around content */
+            margin-top: 10px; /* Space between the boxes */
+            max-height: 200px; /* Limit the height of the boxes */
+            overflow-y: auto; /* Add scroll if content exceeds height */
+        }
+        #streamingmessage {
+
+        }
+
+        #oldcorrectedmessage {
+        }
+
+        #newcorrectedmessage {
+
+        }
+        #finalcorrectedmessage{
+
         }
 
         #chatBox {
@@ -129,9 +151,80 @@
         }
         #frequencySettings {
             background: #720505; /* Background color for frequency settings */
-            padding: 20px;
-            border-radius: 10px;
+            padding: 50px;
+            border-radius: 50px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        /* General slider styling */
+        input[type="range"] {
+            -webkit-appearance: none; /* Removes default styling for WebKit browsers */
+            width: 100%; /* Set the width to fill the parent container */
+            height: 15px; /* Increase the height of the slider */
+            border-radius: 10px; /* Round corners of the track */
+            background: #ddd; /* Change background color of the track */
+            outline: none; /* Remove default focus outline */
+            opacity: 0.8; /* Make the slider a bit transparent */
+            transition: opacity 0.2s; /* Smooth transition when hovered */
+        }
+
+        input[type="range"]:hover {
+            opacity: 1; /* Fully opaque on hover */
+        }
+
+        /* Customize the slider thumb (handle) */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; /* Removes default styling for WebKit browsers */
+            appearance: none;
+            width: 25px; /* Increase the width of the handle */
+            height: 25px; /* Increase the height of the handle */
+            border-radius: 50%; /* Make the handle circular */
+            background: #720505; /* Handle color */
+            cursor: pointer; /* Change cursor to pointer */
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.5); /* Add shadow to handle */
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #720505;
+            cursor: pointer;
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+        }
+
+        input[type="range"]::-ms-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #720505;
+            cursor: pointer;
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Styling the track of the slider for webkit browsers */
+        input[type="range"]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 15px; /* Adjust height of the slider track */
+            border-radius: 10px; /* Make the track corners round */
+            background: #ddd; /* Track color */
+        }
+
+        /* Styling the track of the slider for Firefox */
+        input[type="range"]::-moz-range-track {
+            width: 100%;
+            height: 15px;
+            border-radius: 10px;
+            background: #ddd;
+        }
+
+        /* Styling the track of the slider for IE */
+        input[type="range"]::-ms-track {
+            width: 100%;
+            height: 15px;
+            border-radius: 10px;
+            background: #ddd;
+            border: none; /* Remove the border from the track */
+            color: transparent; /* Hide the default track */
         }
     </style>
 </head>
@@ -164,15 +257,48 @@
             <label for="highFrequency">High Frequency (2000-4000):</label>
             <input type="range" id="highFrequency" min="2000" max="4000" value="2000" step="50" />
             <span id="highFrequencyValue">3500</span> Hz
-        </div>     
+        
+            <div id="intensitysettings">
+                <h1>Set Intensity Level</h1>
+                <label for="Intensitylevel">Intensity Level (0-1):</label>
+                <input type="range" id="Intensitylevel" min="0" max="0.5" value="0.0" step="0.001" />
+                <span id="intensityvalue">0</span> db
+            </div>
+
+        </div> 
         <h1>Audio Recorder</h1>
         <div class="button-container">
             <button id="startBtn">Start Recording</button>
             <button id="stopBtn" disabled>Stop Recording</button>
             <button id="endBtn" disabled>End Recording</button>
         </div>
-        <div id="messages"></div>
+        <!-- <div id="messages"></div> -->
+
+        
         <div id="notification"></div> <!-- Notification area -->
+
+        <div id="StreaminGMessageBox">
+            <h3>Instant Transcription</h3>
+            <div id="streamingmessage" class="messages"></div> <!-- For blue (instant transcription) messages -->
+        </div>
+
+        <!-- <div id="OldCorrectedmessageBox">
+            <h3>Old Message</h3>
+            <div id="oldcorrectedmessage" class="messages"></div> 
+        </div> -->
+        
+        <div id="FinalMessageBox">
+            <h3>Final Message</h3>
+            <div id="finalcorrectedmessage" class="messages"></div> <!-- For green (corrected transcription) messages -->
+        </div>
+
+        <div id="NewCorrectedMessageBox">
+            <h3>Corrected Output</h3>
+            <div id="newcorrectedmessage" class="messages"></div> <!-- For green (corrected transcription) messages -->
+        </div>
+
+        
+
 
         <div class="button-container" style="justify-content: center;">
             <button id="sendTrueBtn" disabled>Create Context</button>
@@ -200,6 +326,7 @@
             <h3> Save The Information </h3>
             <button id="saveBtn" disabled>Save</button>
         </div>
+
     </div>
 
     <script>
@@ -215,13 +342,78 @@
             console.log('WebSocket connection opened');
         };
 
+        let streamingmessageDiv = document.getElementById('streamingmessage'); // Cache the streamingmessage div
+        let oldcorrectedmessageDiv = document.getElementById('oldcorrectedmessage'); // Cache the oldcorrectedmessageDiv div
+        let newcorrectedmessageDiv = document.getElementById('newcorrectedmessage');
+        let oldMessageCounter = 16; // Counter for old messages
+        let newMessageCounter = 16; // Counter for new messages
+        let finalmessage = 1;
+        let messageDiv = document.getElementById('finalcorrectedmessage');
+
         ws.onmessage = function(event) {
-            console.log('Received message:', event.data); // Debugging: Log the received message
-            const messageDiv = document.getElementById('messages');
-            // Append new message to the existing text without creating a new line
-            messageDiv.innerHTML += `${event.data} <br>`;
-            messageDiv.scrollTop = messageDiv.scrollHeight; // Scroll to the bottom
-        };
+            console.log('Received message:', event.data);
+            
+            const receivedMessage = JSON.parse(event.data); // Parse the JSON message
+            
+            if (receivedMessage.source === "Final Transcription") {
+                // Clear the container before appending the new message
+                newcorrectedmessageDiv.innerHTML = '';  // This will clear out the previous message
+
+                // Create a new label for "New Message:"
+                const label = document.createElement('div');
+                label.style.color = 'black'; // Black color for the label
+                label.innerHTML = `New Message ${finalmessage}:`; // Add "New Message:" with counter
+                newcorrectedmessageDiv.appendChild(label);
+                
+                // Create a container for the messages to display them in one line
+                const messageContainer = document.createElement('div'); // New div to hold the messages
+                messageContainer.style.display = 'inline'; // Display inline for one line
+                messageContainer.style.color = 'purple'; // Color for corrected messages
+
+                // Assuming receivedMessage.content is a list of strings
+                receivedMessage.content.forEach((text, index) => {
+                    // Add a space between messages
+                    messageContainer.innerHTML += text + (index < receivedMessage.content.length - 1 ? ' ' : '');
+                });
+
+                newcorrectedmessageDiv.appendChild(messageContainer);
+            }
+
+            if (receivedMessage.source === "Instant Transcription") {
+                // Create a new blue message element
+                const blueMessage = document.createElement('span');
+                blueMessage.style.color = 'blue'; // Color for instant messages
+                blueMessage.innerHTML = receivedMessage.content + ' '; // Add space
+                streamingmessageDiv.appendChild(blueMessage); // Append the new blue message
+
+            }
+            else if (receivedMessage.source === "Final Transcription") {
+                // Create a new label for "Old Message:"
+                const label = document.createElement('div');
+                label.style.color = 'black'; // Black color for the label
+                label.innerHTML = `Final Message ${finalmessage++}:`; // Add "New Message:" with counter
+                messageDiv.appendChild(label);
+                
+                // Create a container for the messages to display them in one line
+                const messageContainer = document.createElement('div'); // New div to hold the messages
+                messageContainer.style.display = 'inline'; // Display inline for one line
+                messageContainer.style.color = 'orange'; // Color for corrected messages
+
+                // Assuming receivedMessage.content is a list of strings
+                receivedMessage.content.forEach((text, index) => {
+                    // Add a space between messages
+                    messageContainer.innerHTML += text + (index < receivedMessage.content.length - 1 ? ' ' : '');
+                });
+
+                // Append the message container after the label
+                messageDiv.appendChild(messageContainer);
+            }
+
+            // Scroll both message boxes to the bottom after new messages
+            streamingmessageDiv.scrollTop = streamingmessageDiv.scrollHeight;
+            oldcorrectedmessageDiv.scrollTop = oldcorrectedmessageDiv.scrollHeight;
+            newcorrectedmessageDiv.scrollTop = newcorrectedmessageDiv.scrollHeight;
+        }
 
         ws.onerror = function(error) {
             console.log('WebSocket Error: ', error);
@@ -274,6 +466,8 @@
         const highFrequencySlider = document.getElementById('highFrequency');
         const lowFrequencyValue = document.getElementById('lowFrequencyValue');
         const highFrequencyValue = document.getElementById('highFrequencyValue');
+        const intensityslider = document.getElementById('Intensitylevel')
+        const intensityvalue = document.getElementById('intensityvalue')
 
         // Update displayed frequency values
         lowFrequencySlider.addEventListener('input', () => {
@@ -284,9 +478,14 @@
             highFrequencyValue.textContent = highFrequencySlider.value;
         });
 
+        intensityslider.addEventListener('input', () => {
+            intensityvalue.textContent = intensityslider.value;
+        });
+
         // Initialize frequency values
         lowFrequencyValue.textContent = lowFrequencySlider.value;
         highFrequencyValue.textContent = highFrequencySlider.value;
+        intensityvalue.textContent = intensityslider.value
 
         // Start recording
         document.getElementById('startBtn').addEventListener('click', async () => {
@@ -294,8 +493,12 @@
             try {
                 const lowFreq = parseInt(lowFrequencySlider.value);
                 const highFreq = parseInt(highFrequencySlider.value);
+                const intensity = parseFloat(intensityslider.value)
                 
                 // You can send these values to the backend if needed
+                const intensityData = {
+                    intensity_value: intensity
+                }
                 const frequencyData = {
                     low_frequency: lowFreq,
                     high_frequency: highFreq,
@@ -308,6 +511,14 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify(frequencyData),
+                });
+
+                await fetch('/intensity-settings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(intensityData),
                 });
 
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -336,7 +547,7 @@
                         mediaRecorder.stop();
                         mediaRecorder.start();
                     }
-                }, 1500); // Stop and start every 1.5 seconds
+                }, 2000); // Stop and start every 1.5 seconds
 
                 document.getElementById('startBtn').disabled = true;
                 document.getElementById('stopBtn').disabled = false;
