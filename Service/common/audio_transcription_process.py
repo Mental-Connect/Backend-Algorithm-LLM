@@ -43,6 +43,7 @@ async def process_audio_queue():
         audio_buffer_instance.saved_audio_data.append((data))
         temp_file_path = save_temp_audio_file(data)
 
+
         if temp_file_path:
             asyncio.create_task(process_streaming_transcription(temp_file_path,AudioModels.streaming_model))
         
@@ -151,3 +152,4 @@ async def process_transcription_offline()-> OfflineTranscription:
         return OfflineTranscription(message = message, subject_conversation = identified_subject)
     except Exception as e:
         logging.error(f"Error processing audio: {e}")
+
