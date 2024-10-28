@@ -3,6 +3,6 @@ from pydantic import BaseModel
 
 class BufferLength(BaseModel):
     minimum_stored_buffer_length: int = 4
-    maximum_stored_buffer_length: int = 15
+    maximum_stored_buffer_length: int = 6
     audio_chunk_start_index: int = 0
     audio_chunk_end_index: int = 4

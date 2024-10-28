@@ -19,6 +19,7 @@ temprature = chatbot_confrigations['temprature']
 session_keywords = chatbot_confrigations['session_keywords']
 session_specific_prompt = chatbot_confrigations['session_specific_prompt']
 generic_non_session_prompt = chatbot_confrigations['generic_non_session_prompt']
+text_speaker_identification = chatbot_confrigations['text_speaker_identification']
 
 audio_transcription_files = audio_to_text_transcriber['Audio_transcription_files']
 non_streaming_audio_gathering_time = audio_to_text_transcriber['non_streaming_audio_gathering_time']

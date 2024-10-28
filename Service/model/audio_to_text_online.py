@@ -1,20 +1,13 @@
 import librosa
-import numpy as np
-import nltk
-import warnings
-
 from funasr import AutoModel
-from funasr.utils.postprocess_utils import rich_transcription_postprocess
 from Service.config import *
 from Service.common.noise_filter import *
-from Service.common.session_manager import *
-from Service.common.streaming_model_frequency import StreamingModelFrequency
-from Service.common.session_manager import *
-
+from Service.common.data.streaming_model_frequency import StreamingModelFrequency
+from Service.common.http.streaming_response import StreamingResponse
 
 # Apply the band-pass filter
 
-def audio_to_text_model_online(audio_file_path,model,model_name='paraformer-zh'):
+def audio_to_text_model_online(audio_file_path,model: AutoModel) -> StreamingResponse:
     try:
         transcribed_text = []
         cache = {}
@@ -45,7 +38,7 @@ def audio_to_text_model_online(audio_file_path,model,model_name='paraformer-zh')
         # Post-process the transcription
         text = ''.join(transcribed_text)
         # Return the transcription
-        return text
+        return StreamingResponse(streaming_response = text)
 
     except Exception as e:
         print(f"An error occurred: {e}")

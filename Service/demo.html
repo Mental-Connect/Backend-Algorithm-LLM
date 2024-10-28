@@ -64,7 +64,6 @@
             border-radius: 5px;
             margin-top: 10px;
         }
-
         #notification {
             margin-top: 10px;
             color: #000000;
@@ -289,13 +288,13 @@
             <div id="oldcorrectedmessage" class="messages"></div> 
         </div> -->
         
-        <div id="FinalMessageBox">
+        <!-- <div id="FinalMessageBox">
             <h3>Final Message</h3>
-            <div id="finalcorrectedmessage" class="messages"></div> <!-- For green (corrected transcription) messages -->
-        </div>
+            <div id="finalcorrectedmessage" class="messages"></div> 
+        </div> -->
 
         <div id="NewCorrectedMessageBox">
-            <h3>Corrected Output</h3>
+            <h3>Corrected Transcription</h3>
             <div id="newcorrectedmessage" class="messages"></div> <!-- For green (corrected transcription) messages -->
         </div>
 
@@ -306,7 +305,10 @@
             <button id="sendTrueBtn" disabled>Create Context</button>
         </div>
         <div id="responseMessage"></div>
-
+        <h3> Overall Summary</h3>
+        <div id="outputBox" style="background-color: white; padding: 10px; border: 1px solid #ccc;"></div>
+        <h3> Subject Conversation</h3>
+        <div id="responseBox" style="background-color: white; padding: 10px; border: 1px solid #ccc;"></div>
 
         <div id="chatBox">
             <h1>Chat with Model</h1>
@@ -328,6 +330,7 @@
             <h3> Save The Information </h3>
             <button id="saveBtn" disabled>Save</button>
         </div>
+        
 
     </div>
 
@@ -602,32 +605,40 @@
             });
 
             if (response.ok) {
-                //const result = await response.json(); // If you want to capture the result
-                //console.log(result); // Do something with the result if needed
-                document.getElementById('notification').innerText = 'Context Ready. Now you can Chat!!';
-                document.getElementById('sendTrueBtn').disabled = false; // Enable the sendTrueBtn
-                document.getElementById('notification').innerText = 'Recording ended. Waiting for Context to Process.';
-            }
-        });
+                const result = await response.json(); // Capture the result
+                // document.getElementById('oldcorrectedmessage').innerText = result.response_text; // Corrected line
+                document.getElementById('outputBox').innerText = result.Summarized_message; // Display response
+                document.getElementById('responseBox').innerText = result.response_text.join('\n');
 
-        document.getElementById('sendTrueBtn').addEventListener('click', async () => {
-            const response = await fetch('/create-context', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ command: true }), // Sending True 
-            });
-
-            if (response.ok) {
-                //const result = await response.json(); // If you want to capture the result
-                //console.log(result); // Do something with the result if needed
+                document.getElementById('outputBox').style.color = 'orange'; // Orange for outputBox
+                document.getElementById('responseBox').style.color = 'blue'; // Blue for responseBox
+                
                 document.getElementById('notification').innerText = 'Context Ready. Now you can Chat!!';
                 document.getElementById('sendBtn').disabled = false; // Enable chat button
             } else {
-                document.getElementById('responseMessage').innerText = 'Error sending command.';
+                const errorText = await response.text(); // Capture error text for more details
+                document.getElementById('responseMessage').innerText = `Error: ${errorText}`;
             }
         });
+
+        // document.getElementById('sendTrueBtn').addEventListener('click', async () => {
+        //     const response = await fetch('/create-context', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //         },
+        //         body: JSON.stringify({ command: true }), // Sending True 
+        //     });
+
+        //     if (response.ok) {
+        //         //const result = await response.json(); // If you want to capture the result
+        //         //console.log(result); // Do something with the result if needed
+        //         document.getElementById('notification').innerText = 'Context Ready. Now you can Chat!!';
+        //         document.getElementById('sendBtn').disabled = false; // Enable chat button
+        //     } else {
+        //         document.getElementById('responseMessage').innerText = 'Error sending command.';
+        //     }
+        // });
 
         // Handle dropdown change
         document.getElementById('questionDropdown').addEventListener('change', (event) => {

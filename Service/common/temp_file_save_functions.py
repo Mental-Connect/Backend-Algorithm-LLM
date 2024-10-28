@@ -1,12 +1,8 @@
 import os
-import sys
 import tempfile
 import logging
-import time
-from typing import Optional, Union, List
-
-from fastapi import WebSocket
-from Service.common.session_manager import *
+from typing import Optional
+from Service.common.data.websockets_managment import websocket_management
 
 def save_temp_audio_file(data: bytes, save_to_path: Optional[str] = None) -> Optional[str]:
     try:
@@ -33,7 +29,7 @@ async def send_transcription_to_clients(message: str, source: str):
         "source": source,
         "content": message
     }
-    for websocket in session_manager.active_websockets:
+    for websocket in websocket_management.websockets:
         await websocket.send_json(structured_message)
 
 async def send_corrected_transcription_to_clients(message: list[str], source: str, indexing_pointer_position:int = 0, final_sentence_pointer_position: int = 0):
@@ -46,7 +42,7 @@ async def send_corrected_transcription_to_clients(message: list[str], source: st
     }
     # print("Instant Message", structured_message,"Index: " ,index)
 
-    for websocket in session_manager.active_websockets:
+    for websocket in websocket_management.websockets:
         await websocket.send_json(structured_message)
 
 async def remove_temp_file(file_path: str):
