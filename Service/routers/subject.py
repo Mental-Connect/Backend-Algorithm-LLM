@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from Service.common.http.subject_information_request import SubjectInformationRequest
-from Service.common.audio_receive_queue import audio_receive_queue
+from Service.common.data.audio_receive_queue import audio_receive_queue
 from Service.common.data.student_info import StudentInfo
 import logging
 

@@ -4,7 +4,21 @@ from Service.logging.logging import *
 
 
 def filter_high_intensity_segments(audio_array, segment_duration: float, intensity_threshold: float, model_sampling_rate: int  = model_sampling_rate):
-    """Filter high-intensity audio segments from the given audio array."""
+    """
+    Filter high-intensity audio segments from the given audio array.
+
+    This function divides the audio data into segments of specified duration, calculates the intensity
+    of each segment, and retains only those segments whose intensity exceeds a given threshold.
+
+    Parameters:
+        audio_array (np.ndarray): The input audio data as a NumPy array.
+        segment_duration (float): The duration of each segment in seconds.
+        intensity_threshold (float): The intensity threshold for filtering segments.
+        model_sampling_rate (int, optional): The sampling rate of the model, defaults to the configured model_sampling_rate.
+
+    Returns:
+        List[np.ndarray]: A list of NumPy arrays containing high-intensity audio segments.
+    """
     segment_samples = int(segment_duration * model_sampling_rate)  # Number of samples per segment
     high_intensity_segments = []
 
@@ -38,5 +52,16 @@ def filter_high_intensity_segments(audio_array, segment_duration: float, intensi
 
 
 def compute_intensity(audio_segment: np.ndarray) -> float:
+    """
+    Calculate the intensity (mean square amplitude) of a given audio segment.
+
+    The intensity is computed as the mean of the square of the absolute values of the audio samples.
+
+    Parameters:
+        audio_segment (np.ndarray): The audio segment as a NumPy array.
+
+    Returns:
+        float: The calculated intensity of the audio segment.
+    """
     """Calculate intensity (mean square amplitude) of a given audio segment."""
     return np.mean(np.abs(audio_segment) ** 2)

@@ -4,7 +4,7 @@ import logging
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
 
-from Service.common.audio_receive_queue import audio_receive_queue
+from Service.common.data.audio_receive_queue import audio_receive_queue
 from Service.common.data.websockets_managment import websocket_management
 from Service.common.handle_disconnection import *
 from Service.common.http.context_request import ContextRequest

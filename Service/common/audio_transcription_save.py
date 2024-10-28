@@ -2,6 +2,21 @@ import os
 import pandas as pd
 
 def audio_transcription_save(temp_file_path, full_transcription, audio_save_path):
+    """
+    Save the audio transcription data to an Excel file.
+
+    This function takes the path of a temporary audio file and its corresponding transcription text,
+    then saves this information into an Excel file. If the Excel file already exists, it appends 
+    the new transcription data to the existing file.
+
+    Parameters:
+        temp_file_path (str): The file path of the temporary audio file.
+        full_transcription (str): The transcription text corresponding to the audio file.
+        audio_save_path (str): The path where the audio files are saved, used to determine the location of the Excel file.
+
+    Returns:
+        None
+    """
     data = {
             "File Path": [temp_file_path],
             "Transcription": [full_transcription]

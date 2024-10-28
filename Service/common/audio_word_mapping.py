@@ -9,7 +9,7 @@ async def word_mapping(old_sentence_list,new_senetence_list):
             if chunk_data_2 == chunk_data_3:
                 old_chunk_unmapped_pointer = len(old_sentence_list[:i])
                 new_chunk_unmapped_pointer =  len(new_senetence_list[:j]) 
-                return WordMappingPointer(old_chunk_unamapped_pointer = old_chunk_unmapped_pointer,
+                return WordMappingPointer(old_chunk_unmapped_pointer = old_chunk_unmapped_pointer,
                                            new_chunk_unmapped_pointer = new_chunk_unmapped_pointer)
                 # return old_chunk_unmapped_pointer, new_chunk_unmapped_pointer
 
