@@ -10,5 +10,5 @@ class StudentInfo:
         keys as student identifiers and values as dictionaries of student information.
     """
     def __init__(self):
-        self.student_id_info = ""
-        self.database_data_saved = defaultdict(dict)
+        self.id = ""
+        self.data = defaultdict(dict)

@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 
 from Service.routers import audio, chatbot, subject, audio_settings
-from Service.common.audio_transcription_process import *
+from Service.common.audio_transcription_processor import *
 from Service.common.data.audio_models import AudioModels
 from Service.config import *
 
@@ -34,7 +34,12 @@ async def get():
 # Start audio queue processing on startup
 @app.on_event("startup")
 async def startup_event():
-    AudioModels.streaming_model = AutoModel(model=streaming_model, model_revision="v2.0.4")
-    AudioModels.non_streaming_model = AutoModel(model=non_streaming_model,kwargs=kwargs, vad_model="fsmn-vad", vad_kwargs={"max_single_segment_time": 30000})
-    AudioModels.full_transcription_model = AutoModel(model=non_streaming_model,kwargs=kwargs,punc_model = "ct-punc", vad_model="fsmn-vad", vad_kwargs={"max_single_segment_time": 30000},spk_model="cam++", spk_model_revision="v2.0.2")
+    AudioModels.streaming_model = AutoModel(model=streaming_model, model_revision=streaming_model_revision)
+
+    AudioModels.non_streaming_model = AutoModel(model=non_streaming_model,kwargs=kwargs, 
+                                                vad_model=vad_model, vad_kwargs=vad_kwargs)
+    
+    AudioModels.full_transcription_model = AutoModel(model=non_streaming_model,kwargs=kwargs,punc_model =punc_model, vad_model=vad_model, 
+                                                     vad_kwargs=vad_kwargs,spk_model=spk_model, 
+                                                     spk_model_revision=spk_model_revision)
     asyncio.create_task(process_audio_queue())

@@ -6,15 +6,15 @@ import logging
 from Service.common.http.intensity_setting import IntensitySetting
 from Service.common.data.intensity_settings import IntensitySettings
 
-router = APIRouter()
+router = APIRouter(prefix="/audiosetting", tags=["AudioSetting"])
 
-@router.post("/frequency-settings")
+@router.post("/frequency")
 async def set_frequency(settings: FrequencySettings):
     
     StreamingModelFrequency.low_freq = settings.low_frequency
     StreamingModelFrequency.high_freq = settings.high_frequency
     logging.info(f"Low Freq Range: {settings.low_frequency}, High Freq Range: {settings.high_frequency} ")
 
-@router.post("/intensity-settings")
+@router.post("/intensity")
 async def set_frequency(settings: IntensitySetting):
      IntensitySettings.intensity_value = settings.intensity_value

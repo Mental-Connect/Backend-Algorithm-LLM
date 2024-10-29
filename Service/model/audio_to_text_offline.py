@@ -4,7 +4,7 @@ import numpy as np
 
 from funasr import AutoModel
 from funasr.utils.postprocess_utils import rich_transcription_postprocess
-from Service.common.audio_intensity_calculation import filter_high_intensity_segments
+from Service.common.audio_intensity_calculator import filter_high_intensity_segments
 from Service.common.offline_audio_file_splitting import audio_file_splitting, text_generator
 from Service.config import *
 from Service.logging.logging import *

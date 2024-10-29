@@ -9,16 +9,19 @@
     },
 
     "audio_to_text_transcriber": {
+        "streaming_model":"paraformer-zh-streaming",
+        "streaming_model_revision": "v2.0.4",
+        "streaming_configrations": {"audio_data_processed_partition":[0, 20, 10], "encoder_chunk_look_back":4,"decoder_chunk_look_back": 1, "Samples_in_one_second": 1720,"stopwords":["嗯", "啊", "哦","哼"]},
         "non_streaming_model":"paraformer-zh",
         "non_streaming_audio_gathering_time": 30,
-        "streaming_model":"paraformer-zh-streaming",
-        "Audio_transcription_files":"Audio_transcription_files/",
-        "model_sampling_rate": 16000,
         "kwargs": {"disable_update": true, "device": "cpu"},
-        "streaming_configrations": {"audio_data_processed_partition":[0, 20, 10], "encoder_chunk_look_back":4, 
-        "decoder_chunk_look_back": 1, "Samples_in_one_second": 1720,
-        "stopwords":["嗯", "啊", "哦","哼"]}
-
+        "vad_model":"fsmn-vad",
+        "vad_kwargs":{"max_single_segment_time": 30000},
+        "punc_model":"ct-punc",
+        "spk_model":"cam++",
+        "spk_model_revision":"v2.0.2",
+        "Audio_transcription_files":"Audio_transcription_files/",
+        "model_sampling_rate": 16000
     },
 
     "database_information" : {

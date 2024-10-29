@@ -335,7 +335,7 @@
     </div>
 
     <script>
-        const ws = new WebSocket('ws://localhost:8000/audio-transcribe');
+        const ws = new WebSocket('ws://localhost:8000/audio/transcribe');
         let mediaRecorder;
         let audioChunks = [];
         let recordingInterval;
@@ -510,7 +510,7 @@
                 };
 
                 // Send frequency values to backend
-                await fetch('/frequency-settings', {
+                await fetch('/audiosetting/frequency', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -518,7 +518,7 @@
                     body: JSON.stringify(frequencyData),
                 });
 
-                await fetch('/intensity-settings', {
+                await fetch('/audiosetting/intensity', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -596,7 +596,7 @@
         });
 
         document.getElementById('sendTrueBtn').addEventListener('click', async () => {
-            const response = await fetch('/create-context', {
+            const response = await fetch('/audio/create-context', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

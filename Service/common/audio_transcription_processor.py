@@ -6,7 +6,7 @@ from Service.common.temp_file_save_functions import *
 from Service.config import *
 from Service.common.data.audio_buffer import *
 from Service.common.data.audio_models import AudioModels
-from Service.common.audio_transcription_save import audio_transcription_save
+from Service.common.audio_transcription_saver import audio_transcription_save
 from Service.common.data.audio_receive_queue import audio_receive_queue
 from Service.common.data.pointers_position import PointerPosition
 from Service.common.data.transcribed_text_store import TranscribedTextStore
