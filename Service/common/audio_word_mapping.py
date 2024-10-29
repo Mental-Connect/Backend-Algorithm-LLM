@@ -1,5 +1,4 @@
-
-
+from Service.common.data.word_mapping_pointer import WordMappingPointer
 # Function for word mapping
 async def word_mapping(old_sentence_list,new_senetence_list):
     matched_word_length = await longest_consecutive_common_subsequence(old_sentence_list, new_senetence_list)
@@ -10,10 +9,12 @@ async def word_mapping(old_sentence_list,new_senetence_list):
             if chunk_data_2 == chunk_data_3:
                 old_chunk_unmapped_pointer = len(old_sentence_list[:i])
                 new_chunk_unmapped_pointer =  len(new_senetence_list[:j]) 
-                return old_chunk_unmapped_pointer, new_chunk_unmapped_pointer
+                return WordMappingPointer(old_chunk_unmapped_pointer = old_chunk_unmapped_pointer,
+                                           new_chunk_unmapped_pointer = new_chunk_unmapped_pointer)
+                # return old_chunk_unmapped_pointer, new_chunk_unmapped_pointer
 
 # Function for finding the longest consecutive match
-async def longest_consecutive_common_subsequence(old, new):
+async def longest_consecutive_common_subsequence(old, new) ->int:
     m, n = len(old), len(new)
     dp = [[0] * (n + 1) for _ in range(m + 1)]
     max_length = 0
@@ -26,4 +27,4 @@ async def longest_consecutive_common_subsequence(old, new):
                     max_length = dp[i][j]
             else:
                 dp[i][j] = 0  # No common substring here
-    return max_length
+    return max_length 

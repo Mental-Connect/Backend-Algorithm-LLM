@@ -1,11 +1,21 @@
 import logging
-from Service.common.session_manager import *
+from fastapi import WebSocket
+from Service.common.data.websockets_managment import websocket_management
 
 
 def handle_disconnection(websocket: WebSocket):
-    session_manager.active_websockets.remove(websocket)
-    full_transcription = " ".join(session_manager.transcriptions)
-    session_manager.transcription_storage["transcription"] = full_transcription
-    student_id = session_manager.student_id_info
-    session_manager.database_data_saved[student_id]['Transcribed_Data'] = full_transcription
-    logging.info(f"Client disconnected, full transcription: {full_transcription}")
+    """
+    Handle the disconnection of a WebSocket client.
+
+    This function removes the specified WebSocket connection from the
+    active connections set and logs the disconnection event.
+
+    Parameters:
+        websocket (WebSocket): The WebSocket instance representing the 
+        client that has disconnected.
+
+    Returns:
+        None
+    """
+    websocket_management.websockets.remove(websocket)
+    logging.info(f"Client disconnected")

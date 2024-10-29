@@ -1,14 +1,26 @@
 import os
-import sys
 import tempfile
 import logging
-import time
-from typing import Optional, Union, List
-
-from fastapi import WebSocket
-from Service.common.session_manager import *
+from typing import Optional
+from Service.common.data.websockets_managment import websocket_management
 
 def save_temp_audio_file(data: bytes, save_to_path: Optional[str] = None) -> Optional[str]:
+    """
+    Save audio data to a temporary WAV file.
+
+    This function creates a temporary file to store audio data. If a path is provided,
+    it will save the file in the specified directory; otherwise, it will use the default
+    temporary directory.
+
+    Args:
+        data (bytes): The audio data to be saved.
+        save_to_path (Optional[str]): The directory path where the file should be saved.
+                                       If None, the file will be saved in the default
+                                       temporary directory.
+
+    Returns:
+        Optional[str]: The path to the saved temporary file, or None if an error occurred.
+    """
     try:
         if save_to_path:
             # Ensure the entire directory structure exists
@@ -29,14 +41,35 @@ def save_temp_audio_file(data: bytes, save_to_path: Optional[str] = None) -> Opt
         return None
 
 async def send_transcription_to_clients(message: str, source: str):
+    """
+    Send a transcription message to all connected clients via WebSocket.
+
+    This function structures the message and sends it to each WebSocket client that is connected.
+
+    Args:
+        message (str): The transcription message to send.
+        source (str): The source of the transcription message (e.g., "Instant Transcription").
+    """
     structured_message = {
         "source": source,
         "content": message
     }
-    for websocket in session_manager.active_websockets:
+    for websocket in websocket_management.websockets:
         await websocket.send_json(structured_message)
 
 async def send_corrected_transcription_to_clients(message: list[str], source: str, indexing_pointer_position:int = 0, final_sentence_pointer_position: int = 0):
+    """
+    Send corrected transcription messages to all connected clients.
+
+    This function structures the corrected transcription message with additional indexing information
+    and sends it to each WebSocket client that is connected.
+
+    Args:
+        message (list[str]): The list of corrected transcription messages to send.
+        source (str): The source of the corrected transcription message (e.g., "Final Transcription").
+        indexing_pointer_position (int): The current indexing pointer position for the transcription.
+        final_sentence_pointer_position (int): The final position of the sentence in the transcription.
+    """
     structured_message = {
         "source": source,
         "content": message,
@@ -46,10 +79,18 @@ async def send_corrected_transcription_to_clients(message: list[str], source: st
     }
     # print("Instant Message", structured_message,"Index: " ,index)
 
-    for websocket in session_manager.active_websockets:
+    for websocket in websocket_management.websockets:
         await websocket.send_json(structured_message)
 
 async def remove_temp_file(file_path: str):
+    """
+    Remove a temporary file from the filesystem.
+
+    This function attempts to delete a specified file and logs an error if the deletion fails.
+
+    Args:
+        file_path (str): The path to the file to be deleted.
+    """
     if os.path.exists(file_path):
         try:
             os.remove(file_path)

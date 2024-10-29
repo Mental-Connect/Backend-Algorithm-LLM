@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-class SubjectInformation(BaseModel):
+class SubjectInformationRequest(BaseModel):
     subject_id: str
     subject_name: str
     subject_age: int

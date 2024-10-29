@@ -1,17 +1,16 @@
 import librosa
-import numpy as np
-import nltk
 import logging
+import numpy as np
+
 from funasr import AutoModel
 from funasr.utils.postprocess_utils import rich_transcription_postprocess
+from Service.common.audio_intensity_calculator import filter_high_intensity_segments
+from Service.common.offline_audio_file_splitting import audio_file_splitting, text_generator
 from Service.config import *
 from Service.logging.logging import *
-from Service.common.session_manager import *
-from Service.common.audio_intensity_calculation import *
-from Service.common.offline_audio_file_splitting import *
-from Service.common.intensity_settings import IntensitySettings
 
-def audio_to_text_model_offline(audio_file_path: str, model: AutoModel, segmentation_length = 1, intensity_threshold: float = 0.00) -> str:
+
+def audio_to_text_model_offline(audio_file_path: str, model: AutoModel, segmentation_length = 1, intensity_threshold: float = 0.00):
     """Converts audio file to text using the provided model."""
     try:
         audio_array, sampling_rate = librosa.load(audio_file_path, sr=None)
@@ -33,7 +32,8 @@ def audio_to_text_model_offline(audio_file_path: str, model: AutoModel, segmenta
         
         logging.info('Audio length is acceptable; processing full audio.')
         generated_text = text_generator(model, combined_audio)
-        return rich_transcription_postprocess(generated_text[0]["text"])
+
+        return rich_transcription_postprocess(generated_text[0]["text"]), generated_text
 
     except Exception as e:
         logging.error(f"An error occurred: {e}")
