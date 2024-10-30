@@ -4,7 +4,7 @@ import logging
 from typing import Optional
 from Service.common.data.websockets_managment import websocket_management
 
-def save_temp_audio_file(data: bytes, save_to_path: Optional[str] = None) -> Optional[str]:
+def save_temp_audio_file(data: bytes, save_to_path: Optional[str] = None, online_streaming_path: Optional[str] = None, online_correction_path: Optional[str] = None) -> Optional[str]:
     """
     Save audio data to a temporary WAV file.
 
@@ -23,6 +23,7 @@ def save_temp_audio_file(data: bytes, save_to_path: Optional[str] = None) -> Opt
     """
     try:
         if save_to_path:
+            print("Save Offline Path", save_to_path)
             # Ensure the entire directory structure exists
             full_dir_path = os.path.dirname(save_to_path)
             os.makedirs(full_dir_path, exist_ok=True)
@@ -31,9 +32,22 @@ def save_temp_audio_file(data: bytes, save_to_path: Optional[str] = None) -> Opt
             with tempfile.NamedTemporaryFile(delete=False, suffix=".wav", dir=full_dir_path) as temp_file:
                 temp_file.write(data)
                 return temp_file.name
-        else:
+        elif online_correction_path:
+            print("online_correction_path", online_correction_path)
+            # Ensure the entire directory structure exists
+            online_corr_path = os.path.dirname(online_correction_path)
+            os.makedirs(online_corr_path, exist_ok=True)
             # Create a temporary file in the default temp directory
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_file:
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".wav", dir = online_corr_path) as temp_file:
+                temp_file.write(data)
+                return temp_file.name
+        elif online_streaming_path:
+            print("online_streaming_path", online_streaming_path)
+            # Ensure the entire directory structure exists
+            online_str_path = os.path.dirname(online_streaming_path)
+            os.makedirs(online_str_path, exist_ok=True)
+            # Create a temporary file in the default temp directory
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".wav", dir = online_str_path) as temp_file:
                 temp_file.write(data)
                 return temp_file.name
     except Exception as e:

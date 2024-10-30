@@ -30,11 +30,13 @@ encoder_chunk_look_back = streaming_configrations['encoder_chunk_look_back']
 decoder_chunk_look_back = streaming_configrations['decoder_chunk_look_back']
 Samples_in_one_second = streaming_configrations['Samples_in_one_second']
 selected_stopwords = streaming_configrations['stopwords']
+online_streaming_files = audio_to_text_transcriber['online_streaming_files']
 
 # Audio Transcription Confrigations(Non-Streaming)
 non_streaming_audio_gathering_time = audio_to_text_transcriber['non_streaming_audio_gathering_time']
 non_streaming_model = audio_to_text_transcriber['non_streaming_model']
 kwargs = audio_to_text_transcriber['kwargs']
+online_correction_files = audio_to_text_transcriber['online_correction_files']
 
 # Audio Transcription Confrigations(Other)
 model_sampling_rate = audio_to_text_transcriber['model_sampling_rate']

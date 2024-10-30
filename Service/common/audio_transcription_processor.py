@@ -65,7 +65,7 @@ async def process_audio_queue():
 
         # audio_buffer_instance.transcription_correction_audio_store.extend(data)
         audio_buffer_instance.saved_audio_data.append((data))
-        temp_file_path = save_temp_audio_file(data)
+        temp_file_path = save_temp_audio_file(data, online_streaming_path = online_streaming_files)
 
 
         if temp_file_path:
@@ -126,7 +126,7 @@ async def check_and_process_buffers(current_buffer):
     Returns:
         None
     """
-    combined_temp_path = save_temp_audio_file(current_buffer)
+    combined_temp_path = save_temp_audio_file(current_buffer, online_correction_path = online_correction_files)
     if combined_temp_path:
         await corrected_transcription_online(combined_temp_path, AudioModels.non_streaming_model)
 
