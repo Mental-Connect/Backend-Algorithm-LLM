@@ -10,3 +10,4 @@ torch>=1.13
 torchaudio==2.4.1
 uvicorn==0.30.6
 websockets==13.1
+pandas == 2.2.2
