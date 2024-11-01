@@ -1,5 +1,9 @@
 import librosa
+import logging
 from funasr import AutoModel
+from pydub import AudioSegment
+import scipy.signal
+import numpy as np
 from Service.config import *
 from Service.common.noise_filter import *
 from Service.common.data.streaming_model_frequency import StreamingModelFrequency
@@ -11,13 +15,24 @@ def audio_to_text_model_online(audio_file_path,model: AutoModel) -> StreamingRes
     try:
         transcribed_text = []
         cache = {}
-        speech, sampling_rate = librosa.load(audio_file_path, sr=None)
-        speech = librosa.resample(speech, orig_sr=sampling_rate, target_sr=model_sampling_rate)
-        
+        try: 
+            logging.info("Trying Audio Segment")
+            audio = AudioSegment.from_file(audio_file_path)
+            logging.info("Audio Loaded")
+            sampling_rate = audio.frame_rate
+            speech = np.array(audio.get_array_of_samples()).astype(np.float32)  # Convert to NumPy array
+            target_sr = 16000  # Desired sampling rate
+            num_samples = round(len(speech) * float(target_sr) / sampling_rate)
+            speech = scipy.signal.resample(speech, num_samples)    
+        except:
+            logging.info("Trying Librosa")
+            speech, sampling_rate = librosa.load(audio_file_path, sr=None)
+            logging.info("Audio Loaded")
+            speech = librosa.resample(speech, orig_sr=sampling_rate, target_sr=model_sampling_rate)
+
         # Set your low and high cut-off frequencies (in Hz)
         lowcut = StreamingModelFrequency.low_freq
         highcut = StreamingModelFrequency.high_freq
-        print("Low Frequency: ", lowcut, "Hight Frequency: ", highcut)
         
         # Apply the band-pass filter
         filtered_speech = bandpass_filter(speech, lowcut, highcut, model_sampling_rate)

@@ -1,7 +1,8 @@
 import librosa
 import logging
 import numpy as np
-
+from pydub import AudioSegment
+import scipy.signal
 from funasr import AutoModel
 from funasr.utils.postprocess_utils import rich_transcription_postprocess
 from Service.common.audio_intensity_calculator import filter_high_intensity_segments
@@ -13,8 +14,20 @@ from Service.logging.logging import *
 def audio_to_text_model_offline(audio_file_path: str, model: AutoModel, segmentation_length = 1, intensity_threshold: float = 0.00):
     """Converts audio file to text using the provided model."""
     try:
-        audio_array, sampling_rate = librosa.load(audio_file_path, sr=None)
-        audio_array = librosa.resample(audio_array, orig_sr=sampling_rate, target_sr=model_sampling_rate)
+        try:
+            logging.info("Trying Audio Segment")
+            audio = AudioSegment.from_file(audio_file_path)
+            logging.info("Audio Loaded")
+            sampling_rate = audio.frame_rate
+            audio_array = np.array(audio.get_array_of_samples()).astype(np.float32)  # Convert to NumPy array
+            target_sr = 16000  # Desired sampling rate
+            num_samples = round(len(audio_array) * float(target_sr) / sampling_rate)
+            audio_array = scipy.signal.resample(audio_array, num_samples)     
+        except:
+            logging.info("Trying Librosa")
+            audio_array, sampling_rate = librosa.load(audio_file_path, sr=None)
+            logging.info("Audio Loaded")
+            audio_array = librosa.resample(audio_array, orig_sr=sampling_rate, target_sr=model_sampling_rate)
          # Filter high-intensity segments
         high_intensity_segments = filter_high_intensity_segments(audio_array, segmentation_length, intensity_threshold)
         if high_intensity_segments:

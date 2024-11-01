@@ -1,4 +1,4 @@
-# 使用官方 Python 3.9 作为基础镜像
+# 使用官方 Python 3.12 作为基础镜像
 FROM python:3.12.2
 
 # 设置工作目录
@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir -r docker-requirements.txt -i https://pypi.tuna.t
 COPY . .
 
 # 暴露服务端口
-EXPOSE 10000
+EXPOSE 8000
 
 # 运行 FastAPI 应用（假设你的主文件名为 main.py）
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "10000"]
+CMD ["uvicorn", "Service.main:app", "--host", "0.0.0.0", "--port", "8000"]
