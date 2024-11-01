@@ -23,7 +23,6 @@ def save_temp_audio_file(data: bytes, save_to_path: Optional[str] = None, online
     """
     try:
         if save_to_path:
-            print("Save Offline Path", save_to_path)
             # Ensure the entire directory structure exists
             full_dir_path = os.path.dirname(save_to_path)
             os.makedirs(full_dir_path, exist_ok=True)
