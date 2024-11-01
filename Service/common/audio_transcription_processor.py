@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from asyncio import Queue
 from Service.model.audio_to_text_online import audio_to_text_model_online
 from Service.model.audio_to_text_offline import audio_to_text_model_offline
@@ -147,17 +148,18 @@ async def corrected_transcription_online(temp_file_path: str,model):
     """
     try:
         message,_ = audio_to_text_model_offline(temp_file_path,model, intensity_threshold = IntensitySettings.intensity_value)
-        print("Checking message", message)
         # This will check if the message is first message or not,
         if len(audio_buffer_instance.saved_audio_data) <= buffer_length.maximum_stored_buffer_length:
             # Put the first message in old_message and total message list for furture processing
             transcribedtextstore.old_message = message.split()
             transcribedtextstore.total_message = message.split()
-            print("Old Total Sentence: ", transcribedtextstore.total_message)
 
             pointer_info.total_pointer_position = len(transcribedtextstore.old_message)
+            pointer_info.indexed_pointer_position = len(transcribedtextstore.old_message)
             print("pointer_info.total_pointer_position", pointer_info.total_pointer_position)
-            await send_corrected_transcription_to_clients(transcribedtextstore.total_message,"Final Transcription", final_sentence_pointer_position = pointer_info.total_pointer_position)
+            await send_corrected_transcription_to_clients(transcribedtextstore.total_message,"Final Transcription", pointer_info.indexed_pointer_position, pointer_info.total_pointer_position)
+            await send_corrected_transcription_to_clients(transcribedtextstore.total_message,"corrected_transcription",pointer_info.indexed_pointer_position, pointer_info.total_pointer_position)
+
         else:
             # Receive and make list of new message
             transcribedtextstore.new_message = message.split()
@@ -168,9 +170,9 @@ async def corrected_transcription_online(temp_file_path: str,model):
             transcribedtextstore.old_message = transcribedtextstore.new_message[new_chunk_unmapped_pointer:]
             pointer_info.indexed_pointer_position = pointer_info.indexed_pointer_position - old_chunk_mapped_pointer
             transcribedtextstore.total_message = transcribedtextstore.total_message[:pointer_info.indexed_pointer_position]  + transcribedtextstore.new_message[new_chunk_unmapped_pointer:]
-
-            print("Total Message Final: ", transcribedtextstore.total_message)
-            # await send_corrected_transcription_to_clients(transcribedtextstore.new_message[new_chunk_unmapped_pointer:],"New Transcription", pointer_info.indexed_pointer_position, pointer_info.total_pointer_position)
+            print("indexng positrion", pointer_info.indexed_pointer_position + len(transcribedtextstore.new_message[new_chunk_unmapped_pointer:]))
+            print("Total Pointer Position",len(transcribedtextstore.total_message) )
+            await send_corrected_transcription_to_clients(transcribedtextstore.new_message,"corrected_transcription", pointer_info.indexed_pointer_position, pointer_info.total_pointer_position, new_chunk_unmapped_pointer)
             await send_corrected_transcription_to_clients(transcribedtextstore.total_message,"Final Transcription", pointer_info.indexed_pointer_position, pointer_info.total_pointer_position)
             pointer_info.total_pointer_position = len(transcribedtextstore.total_message)
             print("pointer_info.total_pointer_position: ", pointer_info.total_pointer_position)
@@ -200,7 +202,7 @@ async def process_streaming_transcription(temp_file_path: str,model):
     """
     try:
         message = audio_to_text_model_online(temp_file_path,model)
-        await send_transcription_to_clients(message.streaming_response,"Instant Transcription")
+        await send_transcription_to_clients(message.streaming_response,"instant_transcription")
     except Exception as e:
         logging.error(f"Error processing audio: {e}")
     finally:
