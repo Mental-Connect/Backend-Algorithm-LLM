@@ -23,7 +23,6 @@ def save_temp_audio_file(data: bytes, save_to_path: Optional[str] = None, online
     """
     try:
         if save_to_path:
-            print("Save Offline Path", save_to_path)
             # Ensure the entire directory structure exists
             full_dir_path = os.path.dirname(save_to_path)
             os.makedirs(full_dir_path, exist_ok=True)
@@ -33,7 +32,6 @@ def save_temp_audio_file(data: bytes, save_to_path: Optional[str] = None, online
                 temp_file.write(data)
                 return temp_file.name
         elif online_correction_path:
-            print("online_correction_path", online_correction_path)
             # Ensure the entire directory structure exists
             online_corr_path = os.path.dirname(online_correction_path)
             os.makedirs(online_corr_path, exist_ok=True)
@@ -42,7 +40,6 @@ def save_temp_audio_file(data: bytes, save_to_path: Optional[str] = None, online
                 temp_file.write(data)
                 return temp_file.name
         elif online_streaming_path:
-            print("online_streaming_path", online_streaming_path)
             # Ensure the entire directory structure exists
             online_str_path = os.path.dirname(online_streaming_path)
             os.makedirs(online_str_path, exist_ok=True)
@@ -71,7 +68,7 @@ async def send_transcription_to_clients(message: str, source: str):
     for websocket in websocket_management.websockets:
         await websocket.send_json(structured_message)
 
-async def send_corrected_transcription_to_clients(message: list[str], source: str, indexing_pointer_position:int = 0, final_sentence_pointer_position: int = 0):
+async def send_corrected_transcription_to_clients(message: list[str], source: str, indexing_pointer_position:int = 0, final_sentence_pointer_position: int = 0, new_sentence_indexing_pointer: int = 0):
     """
     Send corrected transcription messages to all connected clients.
 
@@ -88,7 +85,8 @@ async def send_corrected_transcription_to_clients(message: list[str], source: st
         "source": source,
         "content": message,
         "indexing_pointer_position":indexing_pointer_position,
-        "final_sentence_pointer_position":final_sentence_pointer_position
+        "final_sentence_pointer_position":final_sentence_pointer_position,
+        "new_sentence_indexing_pointer": new_sentence_indexing_pointer
         
     }
     # print("Instant Message", structured_message,"Index: " ,index)

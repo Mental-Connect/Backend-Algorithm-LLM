@@ -20,9 +20,9 @@
         "punc_model":"ct-punc",
         "spk_model":"cam++",
         "spk_model_revision":"v2.0.2",
-        "Audio_transcription_files":"Audio_transcription_files/",
-        "online_streaming_files":"online_streaming_files/",
-        "online_correction_files":"online_correction_files/",
+        "Audio_transcription_files":"/BACKEND-ALGORITHM-LLM/Audio_transcription_files/",
+        "online_streaming_files":"/BACKEND-ALGORITHM-LLM/online_streaming_files/",
+        "online_correction_files":"/BACKEND-ALGORITHM-LLM/online_correction_files/",
         "model_sampling_rate": 16000
     },
 
