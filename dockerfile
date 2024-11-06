@@ -7,6 +7,12 @@ WORKDIR /BACKEND-ALGORITHM-LLM
 # 复制 requirements.txt 到容器中
 COPY docker-requirements.txt .
 
+# 安装ffmpeg
+RUN apt-get update \
+    && apt-get install -y ffmpeg \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
 # 安装依赖
 RUN pip install --no-cache-dir -r docker-requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 

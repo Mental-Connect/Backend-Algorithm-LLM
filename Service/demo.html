@@ -360,7 +360,7 @@
             
             const receivedMessage = JSON.parse(event.data); // Parse the JSON message
             
-            if (receivedMessage.source === "Final Transcription") {
+            if (receivedMessage.source === "final_Transcription") {
                 // Clear the container before appending the new message
                 newcorrectedmessageDiv.innerHTML = '';  // This will clear out the previous message
 
@@ -385,14 +385,16 @@
             }
 
             if (receivedMessage.source === "instant_transcription") {
-                // Create a new blue message element
-                const blueMessage = document.createElement('span');
-                blueMessage.style.color = 'blue'; // Color for instant messages
-                blueMessage.innerHTML = receivedMessage.content + ' '; // Add space
-                streamingmessageDiv.appendChild(blueMessage); // Append the new blue message
-
+                // Loop through each string in the list of messages
+                receivedMessage.content.forEach(message => {
+                    // Create a new blue message element
+                    const blueMessage = document.createElement('span');
+                    blueMessage.style.color = 'blue'; // Color for instant messages
+                    blueMessage.innerHTML = message + ' '; // Add space after each message
+                    streamingmessageDiv.appendChild(blueMessage); // Append the new blue message
+                });
             }
-            else if (receivedMessage.source === "Final Transcription") {
+            else if (receivedMessage.source === "final_Transcription") {
                 // Create a new label for "Old Message:"
                 const label = document.createElement('div');
                 label.style.color = 'black'; // Black color for the label
