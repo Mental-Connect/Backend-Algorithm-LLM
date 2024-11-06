@@ -157,7 +157,7 @@ async def corrected_transcription_online(temp_file_path: str,model):
             pointer_info.total_pointer_position = len(transcribedtextstore.old_message)
             pointer_info.indexed_pointer_position = len(transcribedtextstore.old_message)
             print("pointer_info.total_pointer_position", pointer_info.total_pointer_position)
-            await send_corrected_transcription_to_clients(transcribedtextstore.total_message,"Final Transcription", pointer_info.indexed_pointer_position, pointer_info.total_pointer_position)
+            await send_corrected_transcription_to_clients(transcribedtextstore.total_message,"final_Transcription", pointer_info.indexed_pointer_position, pointer_info.total_pointer_position)
             await send_corrected_transcription_to_clients(transcribedtextstore.total_message,"corrected_transcription",pointer_info.indexed_pointer_position, pointer_info.total_pointer_position)
 
         else:
@@ -173,9 +173,8 @@ async def corrected_transcription_online(temp_file_path: str,model):
             print("indexng positrion", pointer_info.indexed_pointer_position + len(transcribedtextstore.new_message[new_chunk_unmapped_pointer:]))
             print("Total Pointer Position",len(transcribedtextstore.total_message) )
             await send_corrected_transcription_to_clients(transcribedtextstore.new_message,"corrected_transcription", pointer_info.indexed_pointer_position, pointer_info.total_pointer_position, new_chunk_unmapped_pointer)
-            await send_corrected_transcription_to_clients(transcribedtextstore.total_message,"Final Transcription", pointer_info.indexed_pointer_position, pointer_info.total_pointer_position)
+            await send_corrected_transcription_to_clients(transcribedtextstore.total_message,"final_Transcription", pointer_info.indexed_pointer_position, pointer_info.total_pointer_position)
             pointer_info.total_pointer_position = len(transcribedtextstore.total_message)
-            print("pointer_info.total_pointer_position: ", pointer_info.total_pointer_position)
             
             
     except Exception as e:
@@ -202,7 +201,10 @@ async def process_streaming_transcription(temp_file_path: str,model):
     """
     try:
         message = audio_to_text_model_online(temp_file_path,model)
-        await send_transcription_to_clients(message.streaming_response,"instant_transcription")
+        message_list = message.streaming_response
+        message_list = message_list.split()
+        print('message_list', message_list)
+        await send_transcription_to_clients(message_list,"instant_transcription")
     except Exception as e:
         logging.error(f"Error processing audio: {e}")
     finally:
