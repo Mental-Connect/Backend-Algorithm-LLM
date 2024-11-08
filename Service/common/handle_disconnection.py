@@ -1,6 +1,6 @@
 import logging
 from fastapi import WebSocket
-from Service.common.data.websockets_managment import websocket_management
+from Service.common.data.websockets_managment import websocket_manager
 
 
 def handle_disconnection(websocket: WebSocket):
@@ -17,5 +17,5 @@ def handle_disconnection(websocket: WebSocket):
     Returns:
         None
     """
-    websocket_management.websockets.remove(websocket)
+    # websocket_manager.websockets.remove(websocket)
     logging.info(f"Client disconnected")

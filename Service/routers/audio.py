@@ -16,7 +16,6 @@ async def websocket_endpoint(websocket: WebSocket):
 
 @router.post("/create-context")
 async def create_context(request: ContextRequest):
-    if request.command:
-        message,subject_conversation =  await create_context_logic()
-        logging.info("Offline Context creation Completed")
+    message,subject_conversation =  await create_context_logic(request.audio)
+    logging.info("Offline Context creation Completed")
     return ContextResponse(Summarized_message= message, response_text = subject_conversation)

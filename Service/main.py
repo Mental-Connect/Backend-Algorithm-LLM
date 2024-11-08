@@ -42,4 +42,4 @@ async def startup_event():
     AudioModels.full_transcription_model = AutoModel(model=non_streaming_model,kwargs=kwargs,punc_model =punc_model, vad_model=vad_model, 
                                                      vad_kwargs=vad_kwargs,spk_model=spk_model, 
                                                      spk_model_revision=spk_model_revision)
-    asyncio.create_task(process_audio_queue())
+    # asyncio.create_task(process_audio_queue())
