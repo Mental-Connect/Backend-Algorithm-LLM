@@ -1,8 +1,9 @@
 import os
 import tempfile
+from fastapi import WebSocket
 import logging
 from typing import Optional
-from Service.common.data.websockets_managment import websocket_management
+from Service.common.data.websockets_managment import websocket_manager
 
 def save_temp_audio_file(data: bytes, save_to_path: Optional[str] = None, online_streaming_path: Optional[str] = None, online_correction_path: Optional[str] = None) -> Optional[str]:
     """
@@ -51,7 +52,7 @@ def save_temp_audio_file(data: bytes, save_to_path: Optional[str] = None, online
         logging.error(f"Failed to save temporary file: {e}")
         return None
 
-async def send_transcription_to_clients(message: str, source: str):
+async def send_transcription_to_clients(message: str, source: str, websocket: WebSocket):
     """
     Send a transcription message to all connected clients via WebSocket.
 
@@ -65,10 +66,10 @@ async def send_transcription_to_clients(message: str, source: str):
         "source": source,
         "content": message
     }
-    for websocket in websocket_management.websockets:
-        await websocket.send_json(structured_message)
 
-async def send_corrected_transcription_to_clients(message: list[str], source: str, indexing_pointer_position:int = 0, final_sentence_pointer_position: int = 0, new_sentence_indexing_pointer: int = 0):
+    await websocket_manager.send_personal_message(websocket, structured_message)
+
+async def send_corrected_transcription_to_clients(message: list[str], source: str, websocket,indexing_pointer_position:int = 0, final_sentence_pointer_position: int = 0, new_sentence_indexing_pointer: int = 0):
     """
     Send corrected transcription messages to all connected clients.
 
@@ -91,8 +92,7 @@ async def send_corrected_transcription_to_clients(message: list[str], source: st
     }
     # print("Instant Message", structured_message,"Index: " ,index)
 
-    for websocket in websocket_management.websockets:
-        await websocket.send_json(structured_message)
+    await websocket_manager.send_personal_message(websocket, structured_message)
 
 async def remove_temp_file(file_path: str):
     """
