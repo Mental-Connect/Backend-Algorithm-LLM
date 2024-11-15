@@ -1,16 +1,13 @@
-import pytest
-import sys
-import os
-import wave
 import asyncio
 import io
 import logging
-from fastapi.testclient import TestClient
-from fastapi import WebSocket, WebSocketDisconnect
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../'))
-from Service.main import app  # Make sure to import your FastAPI app correctly
+import os
 import pytest
+import sys
+
+from fastapi import WebSocket, WebSocketDisconnect
 from fastapi.testclient import TestClient
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../'))
 from Service.main import app  # Make sure to import your FastAPI app correctly
 
 # Set up logging for visibility in tests
