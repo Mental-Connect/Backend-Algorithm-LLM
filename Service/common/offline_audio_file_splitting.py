@@ -26,7 +26,7 @@ def text_generator(model: AutoModel, audio_sample):
             language="auto",
             use_itn=True,
             batch_size_s=60,
-            merge_vad=False
+            merge_vad=15
         )
     return text
 

@@ -199,7 +199,7 @@ async def process_transcription_offline(audio)-> OfflineTranscription:
     """
     try:
         identified_subject = []
-        message,generated_result = audio_to_text_model_offline(audio, AudioModels.full_transcription_model)
+        message,generated_result = audio_to_text_model_offline(audio, AudioModels.full_transcription_model, intensity_active= False)
         
         for mess in generated_result:
             for info in mess['sentence_info']:
