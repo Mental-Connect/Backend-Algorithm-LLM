@@ -15,15 +15,13 @@ from Service.common.data.offline_transcription import OfflineTranscription
 class AudioProcessor:
     def __init__(self, websocket: WebSocket):
         self.websocket = websocket
-
         # Get user-specific data from WebSocketManager
         self.user_data = websocket_manager.get_user_data(websocket)
-
         # Access user-specific data for processing
         self.audio_buffer = self.user_data.audio_buffer
         self.buffer_length = self.user_data.buffer_length
         self.pointer_info = self.user_data.pointer_info
-        self.transcribedtextstore = self.user_data.transcribedtextstore
+        self.transcribedtextstore = self.user_data.transcribed_text 
         self.buffer_processing_queue = self.user_data.buffer_processing_queue
 
     async def process_audio_queue(self):
@@ -134,7 +132,7 @@ class AudioProcessor:
                 self.transcribedtextstore.total_message = message.split()
                 self.pointer_info.total_pointer_position = len(self.transcribedtextstore.old_message)
                 self.pointer_info.indexed_pointer_position = len(self.transcribedtextstore.old_message)
-                await send_corrected_transcription_to_clients(self.transcribedtextstore.total_message,"final_Transcription",self.websocket ,self.pointer_info.indexed_pointer_position, self.pointer_info.total_pointer_position)
+                # await send_corrected_transcription_to_clients(self.transcribedtextstore.total_message,"final_Transcription",self.websocket ,self.pointer_info.indexed_pointer_position, self.pointer_info.total_pointer_position)
                 await send_corrected_transcription_to_clients(self.transcribedtextstore.total_message,"corrected_transcription",self.websocket,self.pointer_info.indexed_pointer_position, self.pointer_info.total_pointer_position)
 
             else:
@@ -146,10 +144,10 @@ class AudioProcessor:
                 old_chunk_mapped_pointer = len(self.transcribedtextstore.old_message[old_chunk_unmapped_pointer:])
                 self.transcribedtextstore.old_message = self.transcribedtextstore.new_message[new_chunk_unmapped_pointer:]
                 self.pointer_info.indexed_pointer_position = self.pointer_info.indexed_pointer_position - old_chunk_mapped_pointer
-                self.transcribedtextstore.total_message = self.transcribedtextstore.total_message[:self.pointer_info.indexed_pointer_position]  + self.transcribedtextstore.new_message[new_chunk_unmapped_pointer:]
+                # self.transcribedtextstore.total_message = self.transcribedtextstore.total_message[:self.pointer_info.indexed_pointer_position]  + self.transcribedtextstore.new_message[new_chunk_unmapped_pointer:]
                 self.pointer_info.total_pointer_position = self.pointer_info.indexed_pointer_position + len(self.transcribedtextstore.new_message[new_chunk_unmapped_pointer:])
                 await send_corrected_transcription_to_clients(self.transcribedtextstore.new_message,"corrected_transcription",self.websocket ,self.pointer_info.indexed_pointer_position, self.pointer_info.total_pointer_position, new_chunk_unmapped_pointer)
-                await send_corrected_transcription_to_clients(self.transcribedtextstore.total_message,"final_Transcription",self.websocket ,self.pointer_info.indexed_pointer_position, self.pointer_info.total_pointer_position)
+                # await send_corrected_transcription_to_clients(self.transcribedtextstore.total_message,"final_Transcription",self.websocket ,self.pointer_info.indexed_pointer_position, self.pointer_info.total_pointer_position)
                 # self.pointer_info.total_pointer_position = len(self.transcribedtextstore.total_message)
                 
                 
@@ -201,9 +199,7 @@ async def process_transcription_offline(audio)-> OfflineTranscription:
     """
     try:
         identified_subject = []
-        temp_file_path = save_temp_audio_file(audio, save_to_path=audio_transcription_files)
-        logging.info(f"Temporary Path Created: {temp_file_path}")
-        message,generated_result = audio_to_text_model_offline(temp_file_path, AudioModels.full_transcription_model)
+        message,generated_result = audio_to_text_model_offline(audio, AudioModels.full_transcription_model)
         
         for mess in generated_result:
             for info in mess['sentence_info']:

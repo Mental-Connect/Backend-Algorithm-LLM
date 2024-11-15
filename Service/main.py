@@ -5,12 +5,12 @@ from typing import Set
 
 from funasr import AutoModel
 from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 
 from Service.routers import audio, chatbot, subject, audio_settings
 from Service.common.audio_transcription_processor import *
 from Service.common.data.audio_models import AudioModels
+from Service.common.data.intensity_settings import IntensitySettings  
 from Service.config import *
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
@@ -42,4 +42,4 @@ async def startup_event():
     AudioModels.full_transcription_model = AutoModel(model=non_streaming_model,kwargs=kwargs,punc_model =punc_model, vad_model=vad_model, 
                                                      vad_kwargs=vad_kwargs,spk_model=spk_model, 
                                                      spk_model_revision=spk_model_revision)
-    # asyncio.create_task(process_audio_queue())
+    IntensitySettings.intensity_value = 0.0

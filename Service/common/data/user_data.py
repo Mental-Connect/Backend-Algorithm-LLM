@@ -9,5 +9,5 @@ class UserData:
         self.audio_buffer = AudioBuffer()  # Stores audio buffer for processing
         self.buffer_length = BufferLength()  # Stores buffer length information
         self.pointer_info = PointerPosition()  # Stores pointer positions
-        self.transcribedtextstore = TranscribedTextStore()  # Stores transcribed text
+        self.transcribed_text  = TranscribedTextStore()  # Stores transcribed text
         self.buffer_processing_queue = asyncio.Queue()  # Separate queue for audio buffer processing

@@ -3,19 +3,22 @@ import asyncio
 
 from fastapi import WebSocket, WebSocketDisconnect
 from Service.common.data.websockets_managment import websocket_manager
-from Service.common.data.audio_receive_queue import audio_receive_queue
-from Service.common.handle_disconnection import handle_disconnection
 from Service.common.audio_transcription_processor import process_transcription_offline
-from Service.common.data.transcription_context import transcription_context
-from Service.config import *
 from Service.common.audio_transcription_processor import AudioProcessor
+from Service.logging.logging import logger
+from Service.common.data.context_logic import ContextLogic
+from Service.common.temp_file_save_functions import *
+from Service.config import *
 
 async def transcription_logic(websocket: WebSocket):
+    logger.info(f"New WebSocket connection from {websocket.client}")
     await websocket_manager.connect(websocket)
     audio_processor = AudioProcessor(websocket)
+    logger.info(f"WebSocket connected: {websocket.client}")
     try:
         while True:
             data = await websocket.receive_bytes()
+            logger.info(f"Received {len(data)} bytes of audio data from {websocket.client}")
             await websocket_manager.get_user_queue(websocket).put(data)
             asyncio.create_task(audio_processor.process_audio_queue())      
     except WebSocketDisconnect:
@@ -25,9 +28,10 @@ async def transcription_logic(websocket: WebSocket):
         logging.error(f"WebSocket error: {e}")
         await websocket.close()
 
-
-async def create_context_logic(audio):
-    # asyncio.create_task(reset_everything())  # Assuming this is an async function
-    summarized_message = await process_transcription_offline(audio)
-    transcription_context.transcription =  summarized_message.message
-    return summarized_message.message, summarized_message.subject_conversation
+async def create_context_logic(audio: str) -> ContextLogic:
+    try:
+        summarized_message = await process_transcription_offline(audio)
+        return ContextLogic(summarized_message =summarized_message.message, subject_conversation = summarized_message.subject_conversation)
+    except Exception as e:
+        logger.error(f"Error in create_context_logic: {e}", exc_info=True)
+        return ContextLogic(summarized_message ="Error generation Message", subject_conversation = "Error generation Subject Conversation")

@@ -7,5 +7,8 @@ router = APIRouter()
 
 @router.post("/chatbot", response_model=Response)
 async def chat_model(request: Request):
-    answer = await chatbot_service_logic(request)
-    return Response(response=answer)
+    try:
+        answer = await chatbot_service_logic(request)
+        return Response(response=answer)
+    except:
+        return Response(response="Error in chatbot api")
