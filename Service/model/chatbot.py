@@ -4,8 +4,10 @@ from langchain_community.chat_models import ChatZhipuAI
 from Service.config import *
 from Service.api_key import *
 from Service.common.http.response import Response
+from typing import List
 
-def chatbot(context, query: str = '', conversation_identifier: bool = False) -> Response:
+def chatbot(context, session_keywords:List[str], session_specific_prompt: str, generic_non_session_prompt:str
+             ,query: str = '', conversation_identifier: bool = False) -> str:
     # Initialize the ChatZhipuAI model
     chat = ChatZhipuAI(
         model=chatbot_model,
@@ -13,7 +15,7 @@ def chatbot(context, query: str = '', conversation_identifier: bool = False) -> 
     )
     if conversation_identifier == False:
         # Choose the appropriate template based on the context
-        if context_related_to_session(context):
+        if context_related_to_session(context, session_keywords):
             prompt = ChatPromptTemplate.from_template(template=session_specific_prompt)
             formatted_prompt = prompt.format(context=context, input=query)
         else:
@@ -22,16 +24,12 @@ def chatbot(context, query: str = '', conversation_identifier: bool = False) -> 
     else:
         prompt = ChatPromptTemplate.from_template(template=text_speaker_identification)
         formatted_prompt = prompt.format(context=context)
-  
-
-
-  
     # Get the response from the chatbot
     response = chat.invoke(formatted_prompt)
     
-    return Response(response = response.content)
+    return response
 
-def context_related_to_session(context):  
+def context_related_to_session(context, session_keywords):  
     # Check if any of the keywords are present in the context
     if any(keyword in context for keyword in session_keywords):
         return True
