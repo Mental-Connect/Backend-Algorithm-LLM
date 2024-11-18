@@ -6,32 +6,15 @@ from Service.api_key import *
 from Service.common.http.response import Response
 from typing import List
 
-def chatbot(context, session_keywords:List[str], session_specific_prompt: str, generic_non_session_prompt:str
-             ,query: str = '', conversation_identifier: bool = False) -> str:
+def chatbot(query: str, context: str, prompt: str) -> str:
     # Initialize the ChatZhipuAI model
-    chat = ChatZhipuAI(
+    chat_model = ChatZhipuAI(
         model=chatbot_model,
         temperature=temprature,
     )
-    if conversation_identifier == False:
-        # Choose the appropriate template based on the context
-        if context_related_to_session(context, session_keywords):
-            prompt = ChatPromptTemplate.from_template(template=session_specific_prompt)
-            formatted_prompt = prompt.format(context=context, input=query)
-        else:
-            prompt = ChatPromptTemplate.from_template(template=generic_non_session_prompt)
-            formatted_prompt = prompt.format(context=context, input=query)
-    else:
-        prompt = ChatPromptTemplate.from_template(template=text_speaker_identification)
-        formatted_prompt = prompt.format(context=context)
+    prompt = ChatPromptTemplate.from_template(template = prompt)
+    formatted_prompt = prompt.format(context=context, input=query)
     # Get the response from the chatbot
-    response = chat.invoke(formatted_prompt)
+    response = chat_model.invoke(formatted_prompt)
     
     return response
-
-def context_related_to_session(context, session_keywords):  
-    # Check if any of the keywords are present in the context
-    if any(keyword in context for keyword in session_keywords):
-        return True
-    else:
-        return False
