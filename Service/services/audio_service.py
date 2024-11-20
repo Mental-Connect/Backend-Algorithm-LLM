@@ -28,9 +28,9 @@ async def transcription_logic(websocket: WebSocket):
         logging.error(f"WebSocket error: {e}")
         await websocket.close()
 
-async def create_context_logic(audio: str) -> ContextLogic:
+async def create_context_logic(audio_url: str) -> ContextLogic:
     try:
-        summarized_message = await process_transcription_offline(audio)
+        summarized_message = await process_transcription_offline(audio_url)
         return ContextLogic(summarized_message =summarized_message.message, subject_conversation = summarized_message.subject_conversation)
     except Exception as e:
         logger.error(f"Error in create_context_logic: {e}", exc_info=True)

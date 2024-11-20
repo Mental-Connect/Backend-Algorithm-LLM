@@ -1,4 +1,5 @@
 import asyncio
+import requests
 from fastapi import WebSocket
 import logging
 from Service.model.audio_to_text_online import audio_to_text_model_online
@@ -184,7 +185,7 @@ class AudioProcessor:
             await remove_temp_file(temp_file_path)
 
 
-async def process_transcription_offline(audio)-> OfflineTranscription:
+async def process_transcription_offline(audio_url: str)-> OfflineTranscription:
     """
     Process audio for offline transcription and return the result.
 
@@ -198,8 +199,10 @@ async def process_transcription_offline(audio)-> OfflineTranscription:
         Exception: If there is an error during audio processing or transcription.
     """
     try:
+        audio_bytes = requests.get(audio_url, verify=False)
+        audio_file = save_temp_audio_file(audio_bytes.content, save_to_path = audio_transcription_files)
         identified_subject = []
-        message,generated_result = audio_to_text_model_offline(audio, AudioModels.full_transcription_model, intensity_active= False)
+        message,generated_result = audio_to_text_model_offline(audio_file, AudioModels.full_transcription_model, intensity_active= False)
         
         for mess in generated_result:
             for info in mess['sentence_info']:
