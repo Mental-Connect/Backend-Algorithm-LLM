@@ -17,4 +17,4 @@ def chatbot(query: str, context: str, prompt: str) -> str:
     # Get the response from the chatbot
     response = chat_model.invoke(formatted_prompt)
     
-    return response
+    return response.content

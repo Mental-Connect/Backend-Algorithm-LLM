@@ -512,7 +512,7 @@
                 };
 
                 // Send frequency values to backend
-                await fetch('/audiosetting/frequency', {
+                await fetch('/audio-setting/frequency', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -520,7 +520,7 @@
                     body: JSON.stringify(frequencyData),
                 });
 
-                await fetch('/audiosetting/intensity', {
+                await fetch('/audio-setting/intensity', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -654,12 +654,41 @@
         document.getElementById('sendBtn').addEventListener('click', async () => {
             const input = document.getElementById('chatInput');
             const message = input.value.trim();
-            if (message) {
+            const dropdown = document.getElementById('questionDropdown');
+            const selectedContext = dropdown.value;
+
+            if (message && selectedContext) {
                 input.value = ''; // Clear input field
+
                 // Display the user's message
                 const chatDiv = document.getElementById('chatMessages');
                 chatDiv.innerHTML += `<div><strong>You:</strong> ${message}</div>`;
                 chatDiv.scrollTop = chatDiv.scrollHeight; // Scroll to the bottom
+
+                // Define fixed context
+                const context = `这是与学生进行的心理咨询记录。咨询过程中，来访者报告了他们的情况，咨询师提供了支持和指导。`;
+
+                // Define the prompt (user's message)
+                const prompt = message;
+
+                // Build the session-specific prompt with placeholders for context and input
+                const session_specific_prompt = `
+                    你是一位刚刚结束了与学生咨询的心理医生。以下是关于这次咨询的详细信息：<Context>\n
+                    {context}\n<Context>\n根据这次咨询的信息，请用第一人称的口吻直接回答以下问题。只回答问题的内容，不要添加额外的建议或背景信息。
+                    请尽量直接回答，不使用标题或分段格式，确保回答与问题直接相关。\n问题：{input}\n
+                `;
+
+                // Format the prompt by replacing placeholders with the actual context and query
+                const formatted_prompt = session_specific_prompt
+                    .replace("{context}", context)
+                    .replace("{input}", prompt);
+
+                // Create the request body (send formatted prompt along with the query)
+                const requestBody = {
+                    prompt: formatted_prompt,  // Send formatted prompt directly
+                    context: context,                          // Send context
+                    query: selectedContext                     // Send query (selected question)
+                };
 
                 // Send the chat message to the server
                 const response = await fetch('/chatbot', {
@@ -667,14 +696,16 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ prompt: message })
+                    body: JSON.stringify(requestBody)
                 });
+
                 const data = await response.json();
                 // Display the model's response
                 chatDiv.innerHTML += `<div><strong>Model:</strong> ${data.response}</div>`;
                 chatDiv.scrollTop = chatDiv.scrollHeight; // Scroll to the bottom
             }
         });
+
 
         document.getElementById('saveBtn').addEventListener('click', async () => {
             const studentId = document.getElementById('studentId').value;
