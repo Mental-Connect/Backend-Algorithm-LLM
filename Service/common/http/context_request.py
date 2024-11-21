@@ -1,4 +1,4 @@
 from pydantic import BaseModel
 
 class ContextRequest(BaseModel):
-    audio_file: str
+    audio_url: str

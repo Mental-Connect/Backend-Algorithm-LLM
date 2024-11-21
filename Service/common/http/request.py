@@ -1,5 +1,7 @@
 from pydantic import BaseModel
+from typing import List
 
 class Request(BaseModel):
-    prompt: str
+    query: str
     context:str
+    prompt: str

@@ -17,9 +17,6 @@ streaming_configrations = audio_to_text_transcriber['streaming_configrations']
 # ChatBot Confrigations
 chatbot_model = chatbot_confrigations['model'] # Name code for other models: glm-4-plus, glm-4-0520, glm-4, glm-4-air, glm-4-airx, glm-4-long, glm-4-flash
 temprature = chatbot_confrigations['temprature']
-session_keywords = chatbot_confrigations['session_keywords']
-session_specific_prompt = chatbot_confrigations['session_specific_prompt']
-generic_non_session_prompt = chatbot_confrigations['generic_non_session_prompt']
 text_speaker_identification = chatbot_confrigations['text_speaker_identification']
 
 # Audio Transcription Confrigations(Streaming)

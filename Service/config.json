@@ -2,9 +2,6 @@
     "chatbot_confrigations": {
         "model": "glm-4",
         "temprature": 0.4,
-        "session_keywords": ["抑郁", "焦虑", "压力"],
-        "session_specific_prompt": "你是一位刚刚结束了与学生咨询的心理医生。以下是关于这次咨询的详细信息：<Context>\n{context}\n<Context>\n根据这次咨询的信息，请用第一人称的口吻直接回答以下问题。只回答问题的内容，不要添加额外的建议或背景信息。请尽量直接回答，不使用标题或分段格式，确保回答与问题直接相关。\n问题：{input}\n",
-        "generic_non_session_prompt": "当前上下文描述了一个情境：\n<Context>\n{context}\n<Context>\n这是一个通用的聊天对话。请以第一人称的口吻直接回答以下问题。请确保回答直接、准确地针对问题本身，不要添加额外的背景信息或建议。如果问题与上下文无关，请直接说明我们没有讨论过这个话题，并提供一个简洁的通用回答，而不是额外的信息。\n问题：{input}\n",
         "text_speaker_identification" : "<Context> {context} </Context>识别并将以下文本分配给说话者1或说话者2。请按顺序提供文本，并为每位说话者清晰标记：1. 说话者1： 2. 说话者2：请勿生成任何其他内容或添加任何文字"
     },
 
