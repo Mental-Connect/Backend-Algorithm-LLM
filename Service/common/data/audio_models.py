@@ -11,5 +11,5 @@ class AudioModels(BaseModel):
         full_transcription_model (Optional[None]): A model for providing full transcription of audio input.
     """
     non_streaming_model: Optional[None] = None
-    streaming_model: Optional[None] = None
+    # streaming_model: Optional[None] = None
     full_transcription_model: Optional[None] = None

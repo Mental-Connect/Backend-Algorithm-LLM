@@ -34,7 +34,7 @@ async def get():
 # Start audio queue processing on startup
 @app.on_event("startup")
 async def startup_event():
-    AudioModels.streaming_model = AutoModel(model=streaming_model, model_revision=streaming_model_revision)
+    # AudioModels.streaming_model = AutoModel(model=streaming_model, model_revision=streaming_model_revision)
 
     AudioModels.non_streaming_model = AutoModel(model=non_streaming_model,kwargs=kwargs, 
                                                 vad_model=vad_model, vad_kwargs=vad_kwargs)
@@ -42,4 +42,4 @@ async def startup_event():
     AudioModels.full_transcription_model = AutoModel(model=non_streaming_model,kwargs=kwargs,punc_model =punc_model, vad_model=vad_model, 
                                                      vad_kwargs=vad_kwargs,spk_model=spk_model, 
                                                      spk_model_revision=spk_model_revision)
-    IntensitySettings.intensity_value = 0.0
+    IntensitySettings.intensity_value = 3.0

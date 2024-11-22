@@ -47,11 +47,10 @@ class AudioProcessor:
 
             # audio_buffer_instance.transcription_correction_audio_store.extend(data)
             self.audio_buffer.saved_audio_data.append((data))
-            temp_file_path = save_temp_audio_file(data, online_streaming_path = online_streaming_files)
+            # temp_file_path = save_temp_audio_file(data, online_streaming_path = online_streaming_files)
 
-
-            if temp_file_path:
-                asyncio.create_task(self.process_streaming_transcription(temp_file_path,AudioModels.streaming_model, self.websocket))
+            # if temp_file_path:
+            #     asyncio.create_task(self.process_streaming_transcription(temp_file_path,AudioModels.streaming_model, self.websocket))
             
             #when length of audio is greater than 8 second and less than 30 second
             if self.buffer_length.minimum_stored_buffer_length<= len(self.audio_buffer.saved_audio_data)< self.buffer_length.maximum_stored_buffer_length:
@@ -133,7 +132,7 @@ class AudioProcessor:
                 self.transcribedtextstore.total_message = message.split()
                 self.pointer_info.total_pointer_position = len(self.transcribedtextstore.old_message)
                 self.pointer_info.indexed_pointer_position = len(self.transcribedtextstore.old_message)
-                # await send_corrected_transcription_to_clients(self.transcribedtextstore.total_message,"final_Transcription",self.websocket ,self.pointer_info.indexed_pointer_position, self.pointer_info.total_pointer_position)
+                await send_corrected_transcription_to_clients(self.transcribedtextstore.total_message,"final_Transcription",self.websocket ,self.pointer_info.indexed_pointer_position, self.pointer_info.total_pointer_position)
                 await send_corrected_transcription_to_clients(self.transcribedtextstore.total_message,"corrected_transcription",self.websocket,self.pointer_info.indexed_pointer_position, self.pointer_info.total_pointer_position)
 
             else:
@@ -145,11 +144,11 @@ class AudioProcessor:
                 old_chunk_mapped_pointer = len(self.transcribedtextstore.old_message[old_chunk_unmapped_pointer:])
                 self.transcribedtextstore.old_message = self.transcribedtextstore.new_message[new_chunk_unmapped_pointer:]
                 self.pointer_info.indexed_pointer_position = self.pointer_info.indexed_pointer_position - old_chunk_mapped_pointer
-                # self.transcribedtextstore.total_message = self.transcribedtextstore.total_message[:self.pointer_info.indexed_pointer_position]  + self.transcribedtextstore.new_message[new_chunk_unmapped_pointer:]
+                self.transcribedtextstore.total_message = self.transcribedtextstore.total_message[:self.pointer_info.indexed_pointer_position]  + self.transcribedtextstore.new_message[new_chunk_unmapped_pointer:]
                 self.pointer_info.total_pointer_position = self.pointer_info.indexed_pointer_position + len(self.transcribedtextstore.new_message[new_chunk_unmapped_pointer:])
                 await send_corrected_transcription_to_clients(self.transcribedtextstore.new_message,"corrected_transcription",self.websocket ,self.pointer_info.indexed_pointer_position, self.pointer_info.total_pointer_position, new_chunk_unmapped_pointer)
-                # await send_corrected_transcription_to_clients(self.transcribedtextstore.total_message,"final_Transcription",self.websocket ,self.pointer_info.indexed_pointer_position, self.pointer_info.total_pointer_position)
-                # self.pointer_info.total_pointer_position = len(self.transcribedtextstore.total_message)
+                await send_corrected_transcription_to_clients(self.transcribedtextstore.total_message,"final_Transcription",self.websocket ,self.pointer_info.indexed_pointer_position, self.pointer_info.total_pointer_position)
+                self.pointer_info.total_pointer_position = len(self.transcribedtextstore.total_message)
                 
                 
         except Exception as e:

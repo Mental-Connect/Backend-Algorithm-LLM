@@ -8,4 +8,4 @@ class IntensitySettings(BaseModel):
         intensity_value (float): The intensity value, which represents the level of intensity 
         (default is 0).
     """
-    intensity_value: float = 0
+    intensity_value: float = 3.0
