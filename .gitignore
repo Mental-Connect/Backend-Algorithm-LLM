@@ -35,6 +35,7 @@ env/
 venv/
 .venv/
 myenv/
+test/
 .vs/
 
 # Ignore dependency folders
