@@ -47,14 +47,14 @@ class AudioProcessor:
 
             # audio_buffer_instance.transcription_correction_audio_store.extend(data)
             self.audio_buffer.saved_audio_data.append((data))
+            
             temp_file_path = save_temp_audio_file(data, online_streaming_path = online_streaming_files)
 
-
             if temp_file_path:
-                asyncio.create_task(self.process_streaming_transcription(temp_file_path,AudioModels.streaming_model, self.websocket))
+                asyncio.create_task(self.process_streaming_transcription(temp_file_path, AudioModels.streaming_model, self.websocket))
             
             #when length of audio is greater than 8 second and less than 30 second
-            if self.buffer_length.minimum_stored_buffer_length<= len(self.audio_buffer.saved_audio_data)< self.buffer_length.maximum_stored_buffer_length:
+            if self.buffer_length.minimum_stored_buffer_length <= len(self.audio_buffer.saved_audio_data) < self.buffer_length.maximum_stored_buffer_length:
                 # Clear the audio stream so new one will come
                 self.audio_buffer.transcription_correction_audio_store.clear()
                 # Start the index from 0 to end_correction_length
@@ -125,7 +125,7 @@ class AudioProcessor:
             None
         """
         try:
-            message,_ = audio_to_text_model_offline(temp_file_path,model, intensity_threshold = IntensitySettings.intensity_value)
+            message, _ = audio_to_text_model_offline(temp_file_path, model, intensity_threshold = IntensitySettings.intensity_value)
             # This will check if the message is first message or not,
             if len(self.audio_buffer.saved_audio_data) <= self.buffer_length.maximum_stored_buffer_length:
                 # Put the first message in old_message and total message list for furture processing
@@ -175,7 +175,7 @@ class AudioProcessor:
             None
         """
         try:
-            message = audio_to_text_model_online(temp_file_path,model)
+            message = audio_to_text_model_online(temp_file_path, model)
             message_list = message.streaming_response
             message_list = message_list.split()
             await send_transcription_to_clients(message_list,"instant_transcription", websocket)
