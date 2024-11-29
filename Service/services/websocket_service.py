@@ -5,10 +5,6 @@ import threading
 import uuid
 
 import websocket
-import websockets
-
-print(websocket.__file__)  # 打印导入路径，确认是 websocket-client 的路径
-print(websockets.__file__)
 
 
 logger = logging.getLogger(__name__)

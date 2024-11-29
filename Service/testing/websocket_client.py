@@ -9,7 +9,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # WebSocket 服务器地址
-SERVER_URL = "ws://localhost:8765"
+SERVER_URL = "ws://localhost:8001"
 
 # 音频相关设置
 SAMPLE_RATE = 16000
