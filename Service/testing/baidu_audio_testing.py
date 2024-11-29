@@ -73,6 +73,9 @@ def send_start_params(ws):
     ws.send(body, websocket.ABNF.OPCODE_TEXT)
     logger.info("send START frame with params:" + body)
 
+    print(f"Send START frame: {body}")
+
+
 
 # 发送音频数据
 def send_audio(ws):
@@ -101,6 +104,8 @@ def send_audio(ws):
             # 从麦克风读取音频数据
             data = stream.read(chunk_len)
 
+            # print("data: ", data)
+            # print("\n\n\n")
             # 直接发送音频数据（pcm格式）
             ws.send(data, websocket.ABNF.OPCODE_BINARY)
             logger.debug(f"发送音频数据帧，长度: {len(data)}")
