@@ -17,4 +17,4 @@ async def websocket_endpoint(websocket: WebSocket):
 async def create_context(request: ContextRequest):
         response =  await create_context_logic(request.audio_url)
         logging.info("Offline Context creation Completed")
-        return ContextResponse(Summarized_message= response.summarized_message, response_text = response.subject_conversation)
+        return ContextResponse(Summarized_message= response.summarized_message, response_text = response.subject_conversation)     
