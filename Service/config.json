@@ -1,6 +1,6 @@
 {
     "chatbot_configuration": {
-        "model": "glm-4",
+        "model": "glm-4-long",
         "temperature": 0.4
     }
 }
