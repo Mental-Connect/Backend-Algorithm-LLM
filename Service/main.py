@@ -34,10 +34,7 @@ async def start_fastapi_service():
 
 # Main function to start both FastAPI and WebSocket services
 async def main():
-    # Start FastAPI and WebSocket services concurrently
     fastapi_task = asyncio.create_task(start_fastapi_service())
-    # websocket_task = asyncio.create_task(start_websocket_service())
-    # await asyncio.gather(fastapi_task, websocket_task)
     await fastapi_task
 
 # Program entry point
