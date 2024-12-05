@@ -1,14 +1,16 @@
 from fastapi import APIRouter
-from Service.common.http.request import Request
-from Service.common.http.response import Response
+from Service.common.http.chatbot_request import ChatbotRequest
+from Service.common.http.chatbot_response import ChatbotResponse
 from Service.services.chatbot_service import chatbot_service_logic
 
 router = APIRouter()
 
-@router.post("/chatbot", response_model=Response)
-async def chat_model(request: Request):
+@router.post("/chatbot", response_model=ChatbotResponse)
+async def chat_model(request: ChatbotRequest):
     try:
+
+        print("chatbot service was called!")
         answer = await chatbot_service_logic(request)
-        return Response(response=answer)
+        return ChatbotResponse(response=answer)
     except:
-        return Response(response="Error in chatbot api")
+        return ChatbotResponse(response="Error in chatbot api")
